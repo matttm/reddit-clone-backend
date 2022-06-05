@@ -2,19 +2,32 @@
 
 package model
 
-type NewTodo struct {
-	Text   string `json:"text"`
-	UserID string `json:"userId"`
+type Credentials struct {
+	Password string `json:"password"`
+	Username string `json:"username"`
 }
 
-type Todo struct {
-	ID   string `json:"id"`
-	Text string `json:"text"`
-	Done bool   `json:"done"`
-	User *User  `json:"user"`
+type Person struct {
+	Count     *float64 `json:"count"`
+	CreatedAt string   `json:"createdAt"`
+	ID        float64  `json:"id"`
+	UpdatedAt string   `json:"updatedAt"`
+	Username  string   `json:"username"`
 }
 
-type User struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+type PersonValidationErrors struct {
+	Errors []string `json:"errors"`
+}
+
+type PersonValidationObject struct {
+	Person           *Person                 `json:"person"`
+	ValidationErrors *PersonValidationErrors `json:"validationErrors"`
+}
+
+type Post struct {
+	Body      string  `json:"body"`
+	CreatedAt string  `json:"createdAt"`
+	ID        float64 `json:"id"`
+	Title     string  `json:"title"`
+	UpdatedAt string  `json:"updatedAt"`
 }

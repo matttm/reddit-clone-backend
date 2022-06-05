@@ -10,11 +10,39 @@ import (
 	"reddit-clone-backend/graph/model"
 )
 
-func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
+func (r *mutationResolver) CreatePost(ctx context.Context, title string) (*model.Post, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
-func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
+func (r *mutationResolver) DeletePost(ctx context.Context, id float64) (int, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *mutationResolver) Login(ctx context.Context, credentials model.Credentials) (*model.PersonValidationObject, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *mutationResolver) Register(ctx context.Context, credentials model.Credentials) (*model.PersonValidationObject, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *mutationResolver) UpdatePost(ctx context.Context, body string, id float64, title string) (*model.Post, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) Hello(ctx context.Context) (string, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) Persons(ctx context.Context) ([]*model.Person, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) Post(ctx context.Context, id int) (*model.Post, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
