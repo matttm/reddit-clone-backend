@@ -12,7 +12,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/go-sql-driver/mysql"
-	"github.com/jinzhu/gorm"
+	"github.com/jinzhu/gorm "
 )
 
 const defaultPort = "8080"

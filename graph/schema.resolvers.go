@@ -11,7 +11,11 @@ import (
 )
 
 func (r *mutationResolver) CreatePost(ctx context.Context, title string) (*model.Post, error) {
-	panic(fmt.Errorf("not implemented"))
+	post := model.Post{
+		Title: title,
+	}
+	r.DB.Create(&post)
+	return &post, nil
 }
 
 func (r *mutationResolver) DeletePost(ctx context.Context, id float64) (int, error) {
