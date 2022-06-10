@@ -14,7 +14,10 @@ func (r *mutationResolver) CreatePost(ctx context.Context, title string) (*model
 	post := model.Post{
 		Title: title,
 	}
-	r.DB.Create(&post)
+	err := r.DB.Create(&post).Error
+	if err != nil {
+		return nil, err
+	}
 	return &post, nil
 }
 
