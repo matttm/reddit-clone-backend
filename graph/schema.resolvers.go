@@ -22,7 +22,8 @@ func (r *mutationResolver) CreatePost(ctx context.Context, title string) (*model
 }
 
 func (r *mutationResolver) DeletePost(ctx context.Context, id float64) (int, error) {
-	panic(fmt.Errorf("not implemented"))
+	r.DB.Where("order_id = ?", id).Delete(&model.Post{})
+	return 1, nil
 }
 
 func (r *mutationResolver) Login(ctx context.Context, credentials model.Credentials) (*model.PersonValidationObject, error) {
