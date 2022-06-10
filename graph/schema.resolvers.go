@@ -35,11 +35,21 @@ func (r *mutationResolver) Register(ctx context.Context, credentials model.Crede
 }
 
 func (r *mutationResolver) UpdatePost(ctx context.Context, body string, id float64, title string) (*model.Post, error) {
-	panic(fmt.Errorf("not implemented"))
+	post := model.Post{
+		ID:    id,
+		Title: title,
+		Body:  body,
+	}
+	err := r.DB.Save(&post).Error
+	if err != nil {
+		return nil, err
+	}
+	return &post, nil
 }
 
 func (r *queryResolver) Hello(ctx context.Context) (string, error) {
-	panic(fmt.Errorf("not implemented"))
+	hello := "Hello Stranger"
+	return hello, nil
 }
 
 func (r *queryResolver) Persons(ctx context.Context) ([]*model.Person, error) {
