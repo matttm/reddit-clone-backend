@@ -10,6 +10,8 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/jinzhu/gorm"
 
+	_ "github.com/go-sql-driver/mysql"
+
 	"reddit-clone-backend/graph"
 	"reddit-clone-backend/graph/generated"
 	"reddit-clone-backend/graph/model"

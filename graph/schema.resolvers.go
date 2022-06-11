@@ -34,11 +34,11 @@ func (r *mutationResolver) Login(ctx context.Context, credentials model.Credenti
 	if err != nil {
 		return nil, err
 	}
+	// errors := model.PersonValidationErrors{
+	// 	Errors: [0]string,
+	// }
 	validationObject := model.PersonValidationObject{
 		Person: &person,
-		ValidationErrors: model.PersonValidationErrors{
-			Errors: [],
-		},
 	}
 	return &validationObject, nil
 }
@@ -67,19 +67,19 @@ func (r *queryResolver) Hello(ctx context.Context) (string, error) {
 
 func (r *queryResolver) Persons(ctx context.Context) ([]*model.Person, error) {
 	var persons []*model.Person
-	r.DB.Preload("Persons").find(&persons)
+	r.DB.Preload("Persons").Find(&persons)
 	return persons, nil
 }
 
 func (r *queryResolver) Post(ctx context.Context, id int) (*model.Post, error) {
 	var post model.Post
 	r.DB.Where("id = ?", id).Find(&post)
-	return &postt, nil
+	return &post, nil
 }
 
 func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
 	var posts []*model.Post
-	r.DB.Preload("Posts").find(&posts)
+	r.DB.Preload("Posts").Find(&posts)
 	return posts, nil
 }
 
