@@ -66,15 +66,21 @@ func (r *queryResolver) Hello(ctx context.Context) (string, error) {
 }
 
 func (r *queryResolver) Persons(ctx context.Context) ([]*model.Person, error) {
-	panic(fmt.Errorf("not implemented"))
+	var persons []*model.Person
+	r.DB.Preload("Persons").find(&persons)
+	return persons, nil
 }
 
 func (r *queryResolver) Post(ctx context.Context, id int) (*model.Post, error) {
-	panic(fmt.Errorf("not implemented"))
+	var post model.Post
+	r.DB.Where("id = ?", id).Find(&post)
+	return &postt, nil
 }
 
 func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
-	panic(fmt.Errorf("not implemented"))
+	var posts []*model.Post
+	r.DB.Preload("Posts").find(&posts)
+	return posts, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.
