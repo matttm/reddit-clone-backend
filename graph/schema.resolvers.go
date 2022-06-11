@@ -22,12 +22,25 @@ func (r *mutationResolver) CreatePost(ctx context.Context, title string) (*model
 }
 
 func (r *mutationResolver) DeletePost(ctx context.Context, id float64) (int, error) {
-	r.DB.Where("order_id = ?", id).Delete(&model.Post{})
+	r.DB.Where("id = ?", id).Delete(&model.Post{})
 	return 1, nil
 }
 
 func (r *mutationResolver) Login(ctx context.Context, credentials model.Credentials) (*model.PersonValidationObject, error) {
-	panic(fmt.Errorf("not implemented"))
+	person := model.Person{
+		Username: credentials.Username,
+	}
+	err := r.DB.Create(&person).Error
+	if err != nil {
+		return nil, err
+	}
+	validationObject := model.PersonValidationObject{
+		Person: &person,
+		ValidationErrors: model.PersonValidationErrors{
+			Errors: [],
+		},
+	}
+	return &validationObject, nil
 }
 
 func (r *mutationResolver) Register(ctx context.Context, credentials model.Credentials) (*model.PersonValidationObject, error) {
