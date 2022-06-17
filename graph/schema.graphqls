@@ -9,6 +9,8 @@ type Mutation {
     login(credentials: Credentials!): PersonValidationObject!
     register(credentials: Credentials!): PersonValidationObject!
     updatePost(body: String!, id: Float!, title: String!): Post!
+    # we'll talk about this in authentication section
+    refreshToken(input: RefreshTokenInput!): String!
 }
 
 type Person {

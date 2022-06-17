@@ -23,7 +23,7 @@ var db *gorm.DB
 
 func initDB() {
 	var err error
-	dataSourceName := "root:@tcp(localhost:3306)/?parseTime=True"
+	dataSourceName := "root:root@tcp(localhost:3306)/?parseTime=True"
 	db, err = gorm.Open("mysql", dataSourceName)
 
 	if err != nil {

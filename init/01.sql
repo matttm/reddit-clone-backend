@@ -1,0 +1,16 @@
+-- Local database definition.
+
+DROP DATABASE IF EXISTS local_db;
+
+CREATE DATABASE local_db;
+
+USE local_db;
+
+DROP TABLE IF EXISTS Users;
+
+CREATE TABLE IF NOT EXISTS Users (
+    ID INT NOT NULL UNIQUE AUTO_INCREMENT,
+    Username VARCHAR (127) NOT NULL UNIQUE,
+    Password VARCHAR (127) NOT NULL,
+    PRIMARY KEY (ID)
+)

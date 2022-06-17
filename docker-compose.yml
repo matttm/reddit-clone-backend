@@ -1,0 +1,26 @@
+version: '3'
+#
+# when running `docker-compose up`
+# use `-p` flag so these ports are published
+#
+
+services:
+    redis:
+        container_name: redis
+        restart: always
+        image: redis:6
+        ports:
+            - '6379:6379'
+        environment:
+            - .
+    db:
+        container_name: reddit-clone
+        image: mysql
+        command: --default-authentication-plugin=mysql_native_password
+        ports:
+            - "3306:3306"
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+    volumes:
+        - ./init:/docker-entrypoint-initdb.d
