@@ -9,16 +9,22 @@ type Mutation {
     login(credentials: Credentials!): PersonValidationObject!
     register(credentials: Credentials!): PersonValidationObject!
     updatePost(body: String!, id: Float!, title: String!): Post!
-    # we'll talk about this in authentication section
     refreshToken(input: RefreshTokenInput!): String!
 }
 
+type Query {
+    hello: String!
+    persons: [Person!]!
+    post(id: Int!): Post!
+    posts: [Post!]!
+}
+
 type Person {
-    count: Float
-    createdAt: DateTime!
     id: Float!
-    updatedAt: DateTime!
     username: String!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    posts: [Post!]!
 }
 
 type PersonValidationErrors {
@@ -31,18 +37,13 @@ type PersonValidationObject {
 }
 
 type Post {
-    body: String!
-    createdAt: DateTime!
     id: Float!
     title: String!
+    body: String!
+    views: Int!
+    createdAt: DateTime!
     updatedAt: DateTime!
-}
-
-type Query {
-    hello: String!
-    persons: [Person!]!
-    post(id: Int!): Post!
-    posts: [Post!]!
+    personId: ID!
 }
 
 "The javascript `Date` as string. Type represents date and time as the ISO Date string."
