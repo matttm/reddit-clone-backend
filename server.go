@@ -5,10 +5,10 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"database/sql"
 
 	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/jinzhu/gorm"
+	"github.com/99designs/gqlgen/graphql/playground"\
 
 	_ "github.com/go-sql-driver/mysql"
 
@@ -18,29 +18,6 @@ import (
 )
 
 const defaultPort = "8080"
-
-var db *gorm.DB
-
-func initDB() {
-	var err error
-	dataSourceName := "root:root@tcp(localhost:3306)/?parseTime=True"
-	db, err = gorm.Open("mysql", dataSourceName)
-
-	if err != nil {
-		fmt.Println(err)
-		panic("failed to connect database")
-	}
-
-	db.LogMode(true)
-
-	// Create the database. This is a one-time step.
-	// Comment out if running multiple times - You may see an error otherwise
-	db.Exec("CREATE DATABASE test_db")
-	db.Exec("USE test_db")
-
-	// Migration to create tables for Order and Item schema
-	db.AutoMigrate(&model.Post{}, &model.Person{})
-}
 
 func main() {
 	port := os.Getenv("PORT")
