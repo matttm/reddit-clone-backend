@@ -8,7 +8,7 @@ import (
 )
 
 type Post struct {
-	id        float32
+	id        string
 	title     string
 	body      string
 	views     int

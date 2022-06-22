@@ -1,8 +1,9 @@
 package persons
 
 type Person struct {
-	id        float32
+	id        string
 	username  string
+	password  string
 	createdAt string
 	updatedAt string
 	// posts     []*posts.Post

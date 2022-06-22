@@ -20,11 +20,11 @@ type Query {
 }
 
 type Person {
-    id: Float!
+    id: ID!
     username: String!
     createdAt: DateTime!
     updatedAt: DateTime!
-    posts: [Post!]!
+    # posts: [Post!]!
 }
 
 type PersonValidationErrors {
@@ -37,7 +37,7 @@ type PersonValidationObject {
 }
 
 type Post {
-    id: Float!
+    id: ID!
     title: String!
     body: String!
     views: Int!

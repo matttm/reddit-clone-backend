@@ -56,7 +56,6 @@ type ComplexityRoot struct {
 	Person struct {
 		CreatedAt func(childComplexity int) int
 		ID        func(childComplexity int) int
-		Posts     func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
 		Username  func(childComplexity int) int
 	}
@@ -74,7 +73,7 @@ type ComplexityRoot struct {
 		Body      func(childComplexity int) int
 		CreatedAt func(childComplexity int) int
 		ID        func(childComplexity int) int
-		PersonID  func(childComplexity int) int
+		Person    func(childComplexity int) int
 		Title     func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
 		Views     func(childComplexity int) int
@@ -204,13 +203,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Person.ID(childComplexity), true
 
-	case "Person.posts":
-		if e.complexity.Person.Posts == nil {
-			break
-		}
-
-		return e.complexity.Person.Posts(childComplexity), true
-
 	case "Person.updatedAt":
 		if e.complexity.Person.UpdatedAt == nil {
 			break
@@ -267,12 +259,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Post.ID(childComplexity), true
 
-	case "Post.personId":
-		if e.complexity.Post.PersonID == nil {
+	case "Post.person":
+		if e.complexity.Post.Person == nil {
 			break
 		}
 
-		return e.complexity.Post.PersonID(childComplexity), true
+		return e.complexity.Post.Person(childComplexity), true
 
 	case "Post.title":
 		if e.complexity.Post.Title == nil {
@@ -420,11 +412,11 @@ type Query {
 }
 
 type Person {
-    id: Float!
+    id: ID!
     username: String!
     createdAt: DateTime!
     updatedAt: DateTime!
-    posts: [Post!]!
+    # posts: [Post!]!
 }
 
 type PersonValidationErrors {
@@ -437,13 +429,13 @@ type PersonValidationObject {
 }
 
 type Post {
-    id: Float!
+    id: ID!
     title: String!
     body: String!
     views: Int!
     createdAt: DateTime!
     updatedAt: DateTime!
-    personId: ID!
+    person: Person!
 }
 
 "The javascript ` + "`" + `Date` + "`" + ` as string. Type represents date and time as the ISO Date string."
@@ -692,8 +684,8 @@ func (ec *executionContext) fieldContext_Mutation_createPost(ctx context.Context
 				return ec.fieldContext_Post_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_Post_updatedAt(ctx, field)
-			case "personId":
-				return ec.fieldContext_Post_personId(ctx, field)
+			case "person":
+				return ec.fieldContext_Post_person(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Post", field.Name)
 		},
@@ -940,8 +932,8 @@ func (ec *executionContext) fieldContext_Mutation_updatePost(ctx context.Context
 				return ec.fieldContext_Post_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_Post_updatedAt(ctx, field)
-			case "personId":
-				return ec.fieldContext_Post_personId(ctx, field)
+			case "person":
+				return ec.fieldContext_Post_person(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Post", field.Name)
 		},
@@ -1041,9 +1033,9 @@ func (ec *executionContext) _Person_id(ctx context.Context, field graphql.Collec
 		}
 		return graphql.Null
 	}
-	res := resTmp.(float64)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Person_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1053,7 +1045,7 @@ func (ec *executionContext) fieldContext_Person_id(ctx context.Context, field gr
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Float does not have child fields")
+			return nil, errors.New("field of type ID does not have child fields")
 		},
 	}
 	return fc, nil
@@ -1191,66 +1183,6 @@ func (ec *executionContext) fieldContext_Person_updatedAt(ctx context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _Person_posts(ctx context.Context, field graphql.CollectedField, obj *model.Person) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Person_posts(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Posts, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.([]*model.Post)
-	fc.Result = res
-	return ec.marshalNPost2ᚕᚖredditᚑcloneᚑbackendᚋgraphᚋmodelᚐPostᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Person_posts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Person",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_Post_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Post_title(ctx, field)
-			case "body":
-				return ec.fieldContext_Post_body(ctx, field)
-			case "views":
-				return ec.fieldContext_Post_views(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Post_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Post_updatedAt(ctx, field)
-			case "personId":
-				return ec.fieldContext_Post_personId(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Post", field.Name)
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _PersonValidationErrors_errors(ctx context.Context, field graphql.CollectedField, obj *model.PersonValidationErrors) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PersonValidationErrors_errors(ctx, field)
 	if err != nil {
@@ -1339,8 +1271,6 @@ func (ec *executionContext) fieldContext_PersonValidationObject_person(ctx conte
 				return ec.fieldContext_Person_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_Person_updatedAt(ctx, field)
-			case "posts":
-				return ec.fieldContext_Person_posts(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Person", field.Name)
 		},
@@ -1419,9 +1349,9 @@ func (ec *executionContext) _Post_id(ctx context.Context, field graphql.Collecte
 		}
 		return graphql.Null
 	}
-	res := resTmp.(float64)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Post_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1431,7 +1361,7 @@ func (ec *executionContext) fieldContext_Post_id(ctx context.Context, field grap
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Float does not have child fields")
+			return nil, errors.New("field of type ID does not have child fields")
 		},
 	}
 	return fc, nil
@@ -1657,8 +1587,8 @@ func (ec *executionContext) fieldContext_Post_updatedAt(ctx context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _Post_personId(ctx context.Context, field graphql.CollectedField, obj *model.Post) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Post_personId(ctx, field)
+func (ec *executionContext) _Post_person(ctx context.Context, field graphql.CollectedField, obj *model.Post) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Post_person(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1671,7 +1601,7 @@ func (ec *executionContext) _Post_personId(ctx context.Context, field graphql.Co
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.PersonID, nil
+		return obj.Person, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1683,19 +1613,29 @@ func (ec *executionContext) _Post_personId(ctx context.Context, field graphql.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*model.Person)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalNPerson2ᚖredditᚑcloneᚑbackendᚋgraphᚋmodelᚐPerson(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Post_personId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Post_person(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Post",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type ID does not have child fields")
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Person_id(ctx, field)
+			case "username":
+				return ec.fieldContext_Person_username(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Person_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Person_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Person", field.Name)
 		},
 	}
 	return fc, nil
@@ -1792,8 +1732,6 @@ func (ec *executionContext) fieldContext_Query_persons(ctx context.Context, fiel
 				return ec.fieldContext_Person_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_Person_updatedAt(ctx, field)
-			case "posts":
-				return ec.fieldContext_Person_posts(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Person", field.Name)
 		},
@@ -1852,8 +1790,8 @@ func (ec *executionContext) fieldContext_Query_post(ctx context.Context, field g
 				return ec.fieldContext_Post_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_Post_updatedAt(ctx, field)
-			case "personId":
-				return ec.fieldContext_Post_personId(ctx, field)
+			case "person":
+				return ec.fieldContext_Post_person(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Post", field.Name)
 		},
@@ -1923,8 +1861,8 @@ func (ec *executionContext) fieldContext_Query_posts(ctx context.Context, field 
 				return ec.fieldContext_Post_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_Post_updatedAt(ctx, field)
-			case "personId":
-				return ec.fieldContext_Post_personId(ctx, field)
+			case "person":
+				return ec.fieldContext_Post_person(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Post", field.Name)
 		},
@@ -4018,13 +3956,6 @@ func (ec *executionContext) _Person(ctx context.Context, sel ast.SelectionSet, o
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "posts":
-
-			out.Values[i] = ec._Person_posts(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4145,9 +4076,9 @@ func (ec *executionContext) _Post(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "personId":
+		case "person":
 
-			out.Values[i] = ec._Post_personId(ctx, field, obj)
+			out.Values[i] = ec._Post_person(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++

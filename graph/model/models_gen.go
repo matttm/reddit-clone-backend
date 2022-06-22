@@ -8,11 +8,10 @@ type Credentials struct {
 }
 
 type Person struct {
-	ID        float64 `json:"id"`
-	Username  string  `json:"username"`
-	CreatedAt string  `json:"createdAt"`
-	UpdatedAt string  `json:"updatedAt"`
-	Posts     []*Post `json:"posts"`
+	ID        string `json:"id"`
+	Username  string `json:"username"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
 }
 
 type PersonValidationErrors struct {
@@ -25,13 +24,13 @@ type PersonValidationObject struct {
 }
 
 type Post struct {
-	ID        float64 `json:"id"`
+	ID        string  `json:"id"`
 	Title     string  `json:"title"`
 	Body      string  `json:"body"`
 	Views     int     `json:"views"`
 	CreatedAt string  `json:"createdAt"`
 	UpdatedAt string  `json:"updatedAt"`
-	PersonID  string  `json:"personId"`
+	Person    *Person `json:"person"`
 }
 
 type RefreshTokenInput struct {
