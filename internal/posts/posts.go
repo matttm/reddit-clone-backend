@@ -1,33 +1,31 @@
-package links
+package posts
 
 import (
-	database "internal/pkg/db/mysql"
-	"github.com/natttn/reddit-clone-backend/internal/users"
 	"log"
+	"reddit-clone-backend/internal/pkg/persons"
 
-	"github.com/go-sql-driver/mysql"
+	database "github.com/matttm/reddit-clone-backend/internal/pkg/db/mysql"
 )
 
-
 type Post struct {
-    id float32
-    title string
-    body string
-    views int
-    createdAt string
-    updatedAt string
-    person *persons.person
+	id        float32
+	title     string
+	body      string
+	views     int
+	createdAt string
+	updatedAt string
+	person    *persons.Person
 }
 
 //#2
-func (link Link) Save() int64 {
+func (post Post) Save() int64 {
 	//#3
-	stmt, err := database.Db.Prepare("INSERT INTO Links(Title,Address) VALUES(?,?)")
+	stmt, err := database.Db.Prepare("INSERT INTO Posts(TITLE, BODY, VIEWS) VALUES(?,?,?)")
 	if err != nil {
 		log.Fatal(err)
 	}
 	//#4
-	res, err := stmt.Exec(link.Title, link.Address)
+	res, err := stmt.Exec(post.title, post.body, post.views)
 	if err != nil {
 		log.Fatal(err)
 	}

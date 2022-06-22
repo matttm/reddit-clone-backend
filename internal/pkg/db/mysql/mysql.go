@@ -14,7 +14,10 @@ var Db *sql.DB
 
 func InitDB() {
 	// Use root:dbpass@tcp(172.17.0.2)/local_db, if you're using Windows.
-	db, err := sql.Open("mysql", "root:dbpass@tcp(localhost)/local_db")
+	//
+	// TODO: make an env file
+	//
+	db, err := sql.Open("mysql", "root:root@tcp(localhost)/local_db")
 	if err != nil {
 		log.Panic(err)
 	}
