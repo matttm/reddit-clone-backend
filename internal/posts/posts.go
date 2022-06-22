@@ -4,7 +4,7 @@ import (
 	"log"
 	"reddit-clone-backend/internal/pkg/persons"
 
-	database "github.com/matttm/reddit-clone-backend/internal/pkg/db/mysql"
+	database "reddit-clone-backend/internal/pkg/db/mysql"
 )
 
 type Post struct {
