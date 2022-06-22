@@ -2,7 +2,7 @@ package posts
 
 import (
 	"log"
-	"reddit-clone-backend/internal/pkg/persons"
+	"reddit-clone-backend/internal/persons"
 
 	database "reddit-clone-backend/internal/pkg/db/mysql"
 )

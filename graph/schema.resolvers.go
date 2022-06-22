@@ -8,10 +8,22 @@ import (
 	"fmt"
 	"reddit-clone-backend/graph/generated"
 	"reddit-clone-backend/graph/model"
+	"reddit-clone-backend/internal/posts"
+	"strconv"
 )
 
 func (r *mutationResolver) CreatePost(ctx context.Context, post model.PostInput) (*model.PostValidationObject, error) {
-	panic(fmt.Errorf("not implemented"))
+	var _post posts.Post
+	_post.title = post.Title
+	_post.body = post.Body
+	postID := _post.Save()
+	ret := &model.Post{ID: strconv.FormatInt(postID, 10), Title: post.Title, Body: post.Body, Views: 0}
+	var tmp []string
+	validationObject := &model.PostValidationObject{
+		post:             ret,
+		validationObject: tmp,
+	}
+	return validationObject, nil
 }
 
 func (r *mutationResolver) DeletePost(ctx context.Context, id float64) (int, error) {
