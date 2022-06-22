@@ -14,13 +14,9 @@ type Person struct {
 	UpdatedAt string `json:"updatedAt"`
 }
 
-type PersonValidationErrors struct {
-	Errors []string `json:"errors"`
-}
-
 type PersonValidationObject struct {
-	Person           *Person                 `json:"person"`
-	ValidationErrors *PersonValidationErrors `json:"validationErrors"`
+	Person           *Person           `json:"person"`
+	ValidationErrors *ValidationErrors `json:"validationErrors"`
 }
 
 type Post struct {
@@ -33,6 +29,20 @@ type Post struct {
 	Person    *Person `json:"person"`
 }
 
+type PostInput struct {
+	Title string `json:"title"`
+	Body  string `json:"body"`
+}
+
+type PostValidationObject struct {
+	Post   *Post             `json:"post"`
+	Errors *ValidationErrors `json:"errors"`
+}
+
 type RefreshTokenInput struct {
 	Token string `json:"token"`
+}
+
+type ValidationErrors struct {
+	Errors []string `json:"errors"`
 }

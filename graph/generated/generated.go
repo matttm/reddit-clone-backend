@@ -45,7 +45,7 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Mutation struct {
-		CreatePost   func(childComplexity int, title string) int
+		CreatePost   func(childComplexity int, post model.PostInput) int
 		DeletePost   func(childComplexity int, id float64) int
 		Login        func(childComplexity int, credentials model.Credentials) int
 		RefreshToken func(childComplexity int, input model.RefreshTokenInput) int
@@ -58,10 +58,6 @@ type ComplexityRoot struct {
 		ID        func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
 		Username  func(childComplexity int) int
-	}
-
-	PersonValidationErrors struct {
-		Errors func(childComplexity int) int
 	}
 
 	PersonValidationObject struct {
@@ -79,16 +75,25 @@ type ComplexityRoot struct {
 		Views     func(childComplexity int) int
 	}
 
+	PostValidationObject struct {
+		Errors func(childComplexity int) int
+		Post   func(childComplexity int) int
+	}
+
 	Query struct {
 		Hello   func(childComplexity int) int
 		Persons func(childComplexity int) int
 		Post    func(childComplexity int, id int) int
 		Posts   func(childComplexity int) int
 	}
+
+	ValidationErrors struct {
+		Errors func(childComplexity int) int
+	}
 }
 
 type MutationResolver interface {
-	CreatePost(ctx context.Context, title string) (*model.Post, error)
+	CreatePost(ctx context.Context, post model.PostInput) (*model.PostValidationObject, error)
 	DeletePost(ctx context.Context, id float64) (int, error)
 	Login(ctx context.Context, credentials model.Credentials) (*model.PersonValidationObject, error)
 	Register(ctx context.Context, credentials model.Credentials) (*model.PersonValidationObject, error)
@@ -127,7 +132,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreatePost(childComplexity, args["title"].(string)), true
+		return e.complexity.Mutation.CreatePost(childComplexity, args["post"].(model.PostInput)), true
 
 	case "Mutation.deletePost":
 		if e.complexity.Mutation.DeletePost == nil {
@@ -217,13 +222,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Person.Username(childComplexity), true
 
-	case "PersonValidationErrors.errors":
-		if e.complexity.PersonValidationErrors.Errors == nil {
-			break
-		}
-
-		return e.complexity.PersonValidationErrors.Errors(childComplexity), true
-
 	case "PersonValidationObject.person":
 		if e.complexity.PersonValidationObject.Person == nil {
 			break
@@ -287,6 +285,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Post.Views(childComplexity), true
 
+	case "PostValidationObject.errors":
+		if e.complexity.PostValidationObject.Errors == nil {
+			break
+		}
+
+		return e.complexity.PostValidationObject.Errors(childComplexity), true
+
+	case "PostValidationObject.post":
+		if e.complexity.PostValidationObject.Post == nil {
+			break
+		}
+
+		return e.complexity.PostValidationObject.Post(childComplexity), true
+
 	case "Query.hello":
 		if e.complexity.Query.Hello == nil {
 			break
@@ -320,6 +332,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Posts(childComplexity), true
 
+	case "ValidationErrors.errors":
+		if e.complexity.ValidationErrors.Errors == nil {
+			break
+		}
+
+		return e.complexity.ValidationErrors.Errors(childComplexity), true
+
 	}
 	return 0, false
 }
@@ -329,6 +348,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	ec := executionContext{rc, e}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputCredentials,
+		ec.unmarshalInputPostInput,
 		ec.unmarshalInputRefreshTokenInput,
 	)
 	first := true
@@ -396,7 +416,7 @@ var sources = []*ast.Source{
 
 
 type Mutation {
-    createPost(title: String!): Post!
+    createPost(post: PostInput!): PostValidationObject!
     deletePost(id: Float!): Int!
     login(credentials: Credentials!): PersonValidationObject!
     register(credentials: Credentials!): PersonValidationObject!
@@ -419,13 +439,13 @@ type Person {
     # posts: [Post!]!
 }
 
-type PersonValidationErrors {
+type ValidationErrors {
     errors: [String!]!
 }
 
 type PersonValidationObject {
     person: Person
-    validationErrors: PersonValidationErrors
+    validationErrors: ValidationErrors
 }
 
 type Post {
@@ -438,12 +458,22 @@ type Post {
     person: Person!
 }
 
+type PostValidationObject {
+    post: Post!
+    errors: ValidationErrors
+}
+
 "The javascript ` + "`" + `Date` + "`" + ` as string. Type represents date and time as the ISO Date string."
 scalar DateTime
 
 input Credentials {
     password: String!
     username: String!
+}
+
+input PostInput {
+    title: String!
+    body: String!
 }
 
 input RefreshTokenInput{
@@ -460,15 +490,15 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 func (ec *executionContext) field_Mutation_createPost_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["title"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("title"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+	var arg0 model.PostInput
+	if tmp, ok := rawArgs["post"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("post"))
+		arg0, err = ec.unmarshalNPostInput2redditᚑcloneᚑbackendᚋgraphᚋmodelᚐPostInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["title"] = arg0
+	args["post"] = arg0
 	return args, nil
 }
 
@@ -647,7 +677,7 @@ func (ec *executionContext) _Mutation_createPost(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreatePost(rctx, fc.Args["title"].(string))
+		return ec.resolvers.Mutation().CreatePost(rctx, fc.Args["post"].(model.PostInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -659,9 +689,9 @@ func (ec *executionContext) _Mutation_createPost(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Post)
+	res := resTmp.(*model.PostValidationObject)
 	fc.Result = res
-	return ec.marshalNPost2ᚖredditᚑcloneᚑbackendᚋgraphᚋmodelᚐPost(ctx, field.Selections, res)
+	return ec.marshalNPostValidationObject2ᚖredditᚑcloneᚑbackendᚋgraphᚋmodelᚐPostValidationObject(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createPost(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -672,22 +702,12 @@ func (ec *executionContext) fieldContext_Mutation_createPost(ctx context.Context
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Post_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Post_title(ctx, field)
-			case "body":
-				return ec.fieldContext_Post_body(ctx, field)
-			case "views":
-				return ec.fieldContext_Post_views(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Post_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Post_updatedAt(ctx, field)
-			case "person":
-				return ec.fieldContext_Post_person(ctx, field)
+			case "post":
+				return ec.fieldContext_PostValidationObject_post(ctx, field)
+			case "errors":
+				return ec.fieldContext_PostValidationObject_errors(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Post", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type PostValidationObject", field.Name)
 		},
 	}
 	defer func() {
@@ -1183,50 +1203,6 @@ func (ec *executionContext) fieldContext_Person_updatedAt(ctx context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _PersonValidationErrors_errors(ctx context.Context, field graphql.CollectedField, obj *model.PersonValidationErrors) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_PersonValidationErrors_errors(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Errors, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.([]string)
-	fc.Result = res
-	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_PersonValidationErrors_errors(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "PersonValidationErrors",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _PersonValidationObject_person(ctx context.Context, field graphql.CollectedField, obj *model.PersonValidationObject) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PersonValidationObject_person(ctx, field)
 	if err != nil {
@@ -1301,9 +1277,9 @@ func (ec *executionContext) _PersonValidationObject_validationErrors(ctx context
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.PersonValidationErrors)
+	res := resTmp.(*model.ValidationErrors)
 	fc.Result = res
-	return ec.marshalOPersonValidationErrors2ᚖredditᚑcloneᚑbackendᚋgraphᚋmodelᚐPersonValidationErrors(ctx, field.Selections, res)
+	return ec.marshalOValidationErrors2ᚖredditᚑcloneᚑbackendᚋgraphᚋmodelᚐValidationErrors(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_PersonValidationObject_validationErrors(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1315,9 +1291,9 @@ func (ec *executionContext) fieldContext_PersonValidationObject_validationErrors
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "errors":
-				return ec.fieldContext_PersonValidationErrors_errors(ctx, field)
+				return ec.fieldContext_ValidationErrors_errors(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type PersonValidationErrors", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type ValidationErrors", field.Name)
 		},
 	}
 	return fc, nil
@@ -1636,6 +1612,111 @@ func (ec *executionContext) fieldContext_Post_person(ctx context.Context, field 
 				return ec.fieldContext_Person_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Person", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PostValidationObject_post(ctx context.Context, field graphql.CollectedField, obj *model.PostValidationObject) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PostValidationObject_post(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Post, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Post)
+	fc.Result = res
+	return ec.marshalNPost2ᚖredditᚑcloneᚑbackendᚋgraphᚋmodelᚐPost(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PostValidationObject_post(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PostValidationObject",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Post_id(ctx, field)
+			case "title":
+				return ec.fieldContext_Post_title(ctx, field)
+			case "body":
+				return ec.fieldContext_Post_body(ctx, field)
+			case "views":
+				return ec.fieldContext_Post_views(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Post_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Post_updatedAt(ctx, field)
+			case "person":
+				return ec.fieldContext_Post_person(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Post", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PostValidationObject_errors(ctx context.Context, field graphql.CollectedField, obj *model.PostValidationObject) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PostValidationObject_errors(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Errors, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.ValidationErrors)
+	fc.Result = res
+	return ec.marshalOValidationErrors2ᚖredditᚑcloneᚑbackendᚋgraphᚋmodelᚐValidationErrors(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PostValidationObject_errors(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PostValidationObject",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "errors":
+				return ec.fieldContext_ValidationErrors_errors(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ValidationErrors", field.Name)
 		},
 	}
 	return fc, nil
@@ -1994,6 +2075,50 @@ func (ec *executionContext) fieldContext_Query___schema(ctx context.Context, fie
 				return ec.fieldContext___Schema_directives(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Schema", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ValidationErrors_errors(ctx context.Context, field graphql.CollectedField, obj *model.ValidationErrors) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ValidationErrors_errors(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Errors, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ValidationErrors_errors(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ValidationErrors",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -3803,6 +3928,37 @@ func (ec *executionContext) unmarshalInputCredentials(ctx context.Context, obj i
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputPostInput(ctx context.Context, obj interface{}) (model.PostInput, error) {
+	var it model.PostInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "title":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("title"))
+			it.Title, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "body":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("body"))
+			it.Body, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputRefreshTokenInput(ctx context.Context, obj interface{}) (model.RefreshTokenInput, error) {
 	var it model.RefreshTokenInput
 	asMap := map[string]interface{}{}
@@ -3967,34 +4123,6 @@ func (ec *executionContext) _Person(ctx context.Context, sel ast.SelectionSet, o
 	return out
 }
 
-var personValidationErrorsImplementors = []string{"PersonValidationErrors"}
-
-func (ec *executionContext) _PersonValidationErrors(ctx context.Context, sel ast.SelectionSet, obj *model.PersonValidationErrors) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, personValidationErrorsImplementors)
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("PersonValidationErrors")
-		case "errors":
-
-			out.Values[i] = ec._PersonValidationErrors_errors(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
 var personValidationObjectImplementors = []string{"PersonValidationObject"}
 
 func (ec *executionContext) _PersonValidationObject(ctx context.Context, sel ast.SelectionSet, obj *model.PersonValidationObject) graphql.Marshaler {
@@ -4083,6 +4211,38 @@ func (ec *executionContext) _Post(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var postValidationObjectImplementors = []string{"PostValidationObject"}
+
+func (ec *executionContext) _PostValidationObject(ctx context.Context, sel ast.SelectionSet, obj *model.PostValidationObject) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, postValidationObjectImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("PostValidationObject")
+		case "post":
+
+			out.Values[i] = ec._PostValidationObject_post(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "errors":
+
+			out.Values[i] = ec._PostValidationObject_errors(ctx, field, obj)
+
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4217,6 +4377,34 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				return ec._Query___schema(ctx, field)
 			})
 
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var validationErrorsImplementors = []string{"ValidationErrors"}
+
+func (ec *executionContext) _ValidationErrors(ctx context.Context, sel ast.SelectionSet, obj *model.ValidationErrors) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, validationErrorsImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ValidationErrors")
+		case "errors":
+
+			out.Values[i] = ec._ValidationErrors_errors(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4752,6 +4940,25 @@ func (ec *executionContext) marshalNPost2ᚖredditᚑcloneᚑbackendᚋgraphᚋm
 	return ec._Post(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalNPostInput2redditᚑcloneᚑbackendᚋgraphᚋmodelᚐPostInput(ctx context.Context, v interface{}) (model.PostInput, error) {
+	res, err := ec.unmarshalInputPostInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNPostValidationObject2redditᚑcloneᚑbackendᚋgraphᚋmodelᚐPostValidationObject(ctx context.Context, sel ast.SelectionSet, v model.PostValidationObject) graphql.Marshaler {
+	return ec._PostValidationObject(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNPostValidationObject2ᚖredditᚑcloneᚑbackendᚋgraphᚋmodelᚐPostValidationObject(ctx context.Context, sel ast.SelectionSet, v *model.PostValidationObject) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._PostValidationObject(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNRefreshTokenInput2redditᚑcloneᚑbackendᚋgraphᚋmodelᚐRefreshTokenInput(ctx context.Context, v interface{}) (model.RefreshTokenInput, error) {
 	res, err := ec.unmarshalInputRefreshTokenInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -5090,13 +5297,6 @@ func (ec *executionContext) marshalOPerson2ᚖredditᚑcloneᚑbackendᚋgraph�
 	return ec._Person(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOPersonValidationErrors2ᚖredditᚑcloneᚑbackendᚋgraphᚋmodelᚐPersonValidationErrors(ctx context.Context, sel ast.SelectionSet, v *model.PersonValidationErrors) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._PersonValidationErrors(ctx, sel, v)
-}
-
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
 	if v == nil {
 		return nil, nil
@@ -5111,6 +5311,13 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	}
 	res := graphql.MarshalString(*v)
 	return res
+}
+
+func (ec *executionContext) marshalOValidationErrors2ᚖredditᚑcloneᚑbackendᚋgraphᚋmodelᚐValidationErrors(ctx context.Context, sel ast.SelectionSet, v *model.ValidationErrors) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._ValidationErrors(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

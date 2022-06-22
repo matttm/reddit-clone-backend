@@ -10,7 +10,7 @@ import (
 	"reddit-clone-backend/graph/model"
 )
 
-func (r *mutationResolver) CreatePost(ctx context.Context, title string) (*model.Post, error) {
+func (r *mutationResolver) CreatePost(ctx context.Context, post model.PostInput) (*model.PostValidationObject, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 

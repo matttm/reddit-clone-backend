@@ -4,7 +4,7 @@
 
 
 type Mutation {
-    createPost(title: String!): Post!
+    createPost(post: PostInput!): PostValidationObject!
     deletePost(id: Float!): Int!
     login(credentials: Credentials!): PersonValidationObject!
     register(credentials: Credentials!): PersonValidationObject!
@@ -27,13 +27,13 @@ type Person {
     # posts: [Post!]!
 }
 
-type PersonValidationErrors {
+type ValidationErrors {
     errors: [String!]!
 }
 
 type PersonValidationObject {
     person: Person
-    validationErrors: PersonValidationErrors
+    validationErrors: ValidationErrors
 }
 
 type Post {
@@ -46,12 +46,22 @@ type Post {
     person: Person!
 }
 
+type PostValidationObject {
+    post: Post!
+    errors: ValidationErrors
+}
+
 "The javascript `Date` as string. Type represents date and time as the ISO Date string."
 scalar DateTime
 
 input Credentials {
     password: String!
     username: String!
+}
+
+input PostInput {
+    title: String!
+    body: String!
 }
 
 input RefreshTokenInput{
