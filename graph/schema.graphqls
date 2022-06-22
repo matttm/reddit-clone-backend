@@ -53,3 +53,7 @@ input Credentials {
     password: String!
     username: String!
 }
+
+input RefreshTokenInput{
+  token: String!
+}
