@@ -14,14 +14,14 @@ import (
 
 func (r *mutationResolver) CreatePost(ctx context.Context, post model.PostInput) (*model.PostValidationObject, error) {
 	var _post posts.Post
-	_post.title = post.Title
-	_post.body = post.Body
+	_post.Title = post.Title
+	_post.Body = post.Body
 	postID := _post.Save()
 	ret := &model.Post{ID: strconv.FormatInt(postID, 10), Title: post.Title, Body: post.Body, Views: 0}
-	var tmp []string
+	var tmp *model.ValidationErrors
 	validationObject := &model.PostValidationObject{
-		post:             ret,
-		validationObject: tmp,
+		ret,
+		tmp,
 	}
 	return validationObject, nil
 }

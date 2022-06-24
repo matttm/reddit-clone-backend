@@ -1,20 +1,18 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
-	"database/sql"
 
 	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/99designs/gqlgen/graphql/playground"\
+	"github.com/99designs/gqlgen/graphql/playground"
 
 	_ "github.com/go-sql-driver/mysql"
 
 	"reddit-clone-backend/graph"
 	"reddit-clone-backend/graph/generated"
-	"reddit-clone-backend/graph/model"
+	database "reddit-clone-backend/internal/pkg/db/mysql"
 )
 
 const defaultPort = "8080"
@@ -24,7 +22,7 @@ func main() {
 	if port == "" {
 		port = defaultPort
 	}
-	initDB()
+	database.InitDB()
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{
 		DB: db,
 	}}))

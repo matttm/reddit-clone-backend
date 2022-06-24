@@ -8,13 +8,13 @@ import (
 )
 
 type Post struct {
-	id        string
-	title     string
-	body      string
-	views     int
-	createdAt string
-	updatedAt string
-	person    *persons.Person
+	Id        string
+	Title     string
+	Body      string
+	Views     int
+	CreatedAt string
+	UpdatedAt string
+	Person    *persons.Person
 }
 
 //#2
@@ -25,7 +25,7 @@ func (post Post) Save() int64 {
 		log.Fatal(err)
 	}
 	//#4
-	res, err := stmt.Exec(post.title, post.body, post.views)
+	res, err := stmt.Exec(post.Title, post.Body, post.Views)
 	if err != nil {
 		log.Fatal(err)
 	}

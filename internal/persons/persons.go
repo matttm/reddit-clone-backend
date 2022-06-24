@@ -1,10 +1,10 @@
 package persons
 
 type Person struct {
-	id        string
-	username  string
-	password  string
-	createdAt string
-	updatedAt string
+	Id        string
+	Username  string
+	Password  string
+	CreatedAt string
+	UpdatedAt string
 	// posts     []*posts.Post
 }
