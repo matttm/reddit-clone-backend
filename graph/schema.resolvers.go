@@ -18,10 +18,11 @@ func (r *mutationResolver) CreatePost(ctx context.Context, post model.PostInput)
 	_post.Body = post.Body
 	postID := _post.Save()
 	ret := &model.Post{ID: strconv.FormatInt(postID, 10), Title: post.Title, Body: post.Body, Views: 0}
-	var tmp *model.ValidationErrors
 	validationObject := &model.PostValidationObject{
-		ret,
-		tmp,
+		Post: ret,
+		Errors: &model.ValidationErrors{
+			Errors: nil,
+		},
 	}
 	return validationObject, nil
 }
