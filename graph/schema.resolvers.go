@@ -27,9 +27,6 @@ func (r *mutationResolver) CreatePost(ctx context.Context, post model.PostInput)
 	var _post posts.Post
 	_post.Title = post.Title
 	_post.Body = post.Body
-	
-	// tmp
-	
 	postID := _post.Save()
 	ret := &model.Post{ID: strconv.FormatInt(postID, 10), Title: post.Title, Body: post.Body, Views: 0}
 	validationObject := &model.PostValidationObject{
@@ -87,12 +84,12 @@ func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
 	var ret []*model.Post
 	for _, v := range posts {
 		tmp := &model.Post{
+			ID:    v.Id,
 			Title: v.Title,
 			Body:  v.Body,
 			Views: v.Views,
 		}
 		ret = append(ret, tmp)
-
 	}
 	return ret, nil
 }
