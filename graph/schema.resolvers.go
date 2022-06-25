@@ -69,7 +69,18 @@ func (r *queryResolver) Post(ctx context.Context, id int) (*model.Post, error) {
 }
 
 func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
-	panic(fmt.Errorf("not implemented"))
+	posts := posts.GetAll()
+	var ret []*model.Post
+	for i, v := range posts {
+		tmp := &model.Post{
+			Title: v.Title,
+			Body:  v.Body,
+			Views: v.Views,
+		}
+		ret = append(ret, tmp)
+
+	}
+	return ret, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.
