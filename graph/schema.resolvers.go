@@ -12,6 +12,15 @@ import (
 	"strconv"
 )
 
+/**
+mutation create{
+  createPost(title: "test", body: "test body"){
+    title,
+    body,
+    id,
+  }
+}
+**/
 func (r *mutationResolver) CreatePost(ctx context.Context, post model.PostInput) (*model.PostValidationObject, error) {
 	var _post posts.Post
 	_post.Title = post.Title

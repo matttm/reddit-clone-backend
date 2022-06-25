@@ -37,3 +37,29 @@ func (post Post) Save() int64 {
 	log.Print("Row inserted!")
 	return id
 }
+
+func GetAll() []Post {
+	stmt, err := database.Db.Prepare("SELECT ID, TITLE, BODY FROM POSTS")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer stmt.Close()
+	rows, err := stmt.Query()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+	var posts []Post
+	for rows.Next() {
+		var post Post
+		err := rows.Scan(&post.Id, &post.Title, &post.Body)
+		if err != nil {
+			log.Fatal(err)
+		}
+		posts = append(posts, post)
+	}
+	if err = rows.Err(); err != nil {
+		log.Fatal(err)
+	}
+	return posts
+}
