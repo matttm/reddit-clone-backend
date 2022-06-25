@@ -27,6 +27,9 @@ func (r *mutationResolver) CreatePost(ctx context.Context, post model.PostInput)
 	var _post posts.Post
 	_post.Title = post.Title
 	_post.Body = post.Body
+	
+	// tmp
+	
 	postID := _post.Save()
 	ret := &model.Post{ID: strconv.FormatInt(postID, 10), Title: post.Title, Body: post.Body, Views: 0}
 	validationObject := &model.PostValidationObject{
