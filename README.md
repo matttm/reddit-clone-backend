@@ -8,16 +8,20 @@ This is the new backend for my reddit-clone-backend written in Go.
 
 ## Helpful Commands
 
+### Migrate
+
 ```
 go run github.com/migrate create -ext sql -dir mysql -seq create_users_table
 ```
-### Description
+#### Description
 This command creates a migration file for the database.
+
+### Generating GraphQL schema
 
 ```
 go run github.com/99designs/gqlgen generate
 ```
-### Description
+#### Description
 This command is used to generate a `resolvers.go` from a `schema.graphqls`
 
 ## Author
