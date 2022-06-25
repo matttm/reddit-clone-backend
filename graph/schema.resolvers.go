@@ -14,10 +14,12 @@ import (
 
 /**
 mutation create{
-  createPost(title: "test", body: "test body"){
-    title,
-    body,
-    id,
+  createPost(post: {title: "test", body: "test body" }){
+    post {
+      id
+      title
+      body
+    }
   }
 }
 **/
@@ -68,10 +70,19 @@ func (r *queryResolver) Post(ctx context.Context, id int) (*model.Post, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
+/**
+query {
+  posts {
+    title
+    body
+    id
+  }
+}
+**/
 func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
 	posts := posts.GetAll()
 	var ret []*model.Post
-	for i, v := range posts {
+	for _, v := range posts {
 		tmp := &model.Post{
 			Title: v.Title,
 			Body:  v.Body,

@@ -20,7 +20,7 @@ type Post struct {
 //#2
 func (post Post) Save() int64 {
 	//#3
-	stmt, err := database.Db.Prepare("INSERT INTO Posts(TITLE, BODY, VIEWS) VALUES(?,?,?)")
+	stmt, err := database.Db.Prepare("INSERT INTO POSTS(TITLE, BODY, VIEWS) VALUES(?,?,?)")
 	if err != nil {
 		log.Fatal(err)
 	}
