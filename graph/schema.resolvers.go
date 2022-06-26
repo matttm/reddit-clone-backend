@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"reddit-clone-backend/graph/generated"
 	"reddit-clone-backend/graph/model"
+	"reddit-clone-backend/internal/persons"
 	"reddit-clone-backend/internal/posts"
 	"strconv"
 )
@@ -47,7 +48,19 @@ func (r *mutationResolver) Login(ctx context.Context, credentials model.Credenti
 }
 
 func (r *mutationResolver) Register(ctx context.Context, credentials model.Credentials) (*model.PersonValidationObject, error) {
-	panic(fmt.Errorf("not implemented"))
+	var person persons.Person
+	person.Username = credentials.Username
+	person.Password = credentials.Password
+	personId := person.Save()
+	ret := &model.Person{ID: strconv.FormatInt(personId, 10), Username: credentials.Username}
+	validationObject := &model.PersonValidationObject{
+		Person: ret,
+		ValidationErrors: &model.ValidationErrors{
+			Errors: nil,
+		},
+	}
+	return validationObject, nil
+
 }
 
 func (r *mutationResolver) UpdatePost(ctx context.Context, body string, id float64, title string) (*model.Post, error) {
