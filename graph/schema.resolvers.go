@@ -51,8 +51,14 @@ func (r *mutationResolver) Register(ctx context.Context, credentials model.Crede
 	var person persons.Person
 	person.Username = credentials.Username
 	person.Password = credentials.Password
+
+	// TODO: validation checks
+
 	personId := person.Save()
 	ret := &model.Person{ID: strconv.FormatInt(personId, 10), Username: credentials.Username}
+
+	// TODO: send JWT
+
 	validationObject := &model.PersonValidationObject{
 		Person: ret,
 		ValidationErrors: &model.ValidationErrors{
@@ -76,7 +82,16 @@ func (r *queryResolver) Hello(ctx context.Context) (string, error) {
 }
 
 func (r *queryResolver) Persons(ctx context.Context) ([]*model.Person, error) {
-	panic(fmt.Errorf("not implemented"))
+	dbPersons := persons.GetAll()
+	var persons []*model.Person
+	for _, v := range dbPersons {
+		tmp := &model.Person{
+			ID:       v.Id,
+			Username: v.Username,
+		}
+		persons = append(persons, tmp)
+	}
+	return persons, nil
 }
 
 func (r *queryResolver) Post(ctx context.Context, id int) (*model.Post, error) {
