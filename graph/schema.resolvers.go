@@ -50,6 +50,9 @@ func (r *mutationResolver) Login(ctx context.Context, credentials model.Credenti
 func (r *mutationResolver) Register(ctx context.Context, credentials model.Credentials) (*model.PersonValidationObject, error) {
 	var person persons.Person
 	person.Username = credentials.Username
+
+	// TODO: hash the pw
+	
 	person.Password = credentials.Password
 
 	// TODO: validation checks
