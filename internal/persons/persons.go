@@ -15,7 +15,7 @@ type Person struct {
 }
 
 //#2
-func (person Person) Save() int64 {
+func (person Person) Create() int64 {
 	//#3
 	stmt, err := database.Db.Prepare("INSERT INTO PERSONS(USERNAME, PASSWORD) VALUES(?,?)")
 	if err != nil {

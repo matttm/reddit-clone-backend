@@ -43,11 +43,11 @@ func (post Post) Update() int64 {
 	if err != nil {
 		log.Fatal(err)
 	}
-	_, err := stmt.Exec(post.Title, post.Body, post.Id)
+	ret, err := stmt.Exec(post.Title, post.Body, post.Id)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Print("Row Updated!")
+	log.Print("Row Updated!", ret)
 	return 0
 }
 
@@ -56,11 +56,11 @@ func (post Post) Delete() int64 {
 	if err != nil {
 		log.Fatal(err)
 	}
-	_, err := stmt.Exec(post.Id)
+	ret, err := stmt.Exec(post.Id)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Print("Row Deleted!")
+	log.Print("Row Deleted!", ret)
 	return 0
 }
 

@@ -52,12 +52,12 @@ func (r *mutationResolver) Register(ctx context.Context, credentials model.Crede
 	person.Username = credentials.Username
 
 	// TODO: hash the pw
-	
+
 	person.Password = credentials.Password
 
 	// TODO: validation checks
 
-	personId := person.Save()
+	personId := person.Create()
 	ret := &model.Person{ID: strconv.FormatInt(personId, 10), Username: credentials.Username}
 
 	// TODO: send JWT
