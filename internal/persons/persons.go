@@ -3,6 +3,7 @@ package persons
 import (
 	"log"
 	database "reddit-clone-backend/internal/pkg/db/mysql"
+	"reddit-clone-backend/pkg/crypto"
 )
 
 type Person struct {
@@ -21,8 +22,11 @@ func (person Person) Create() int64 {
 	if err != nil {
 		log.Fatal(err)
 	}
-	//#4
-	res, err := stmt.Exec(person.Username, person.Password)
+	hashPassword, err := crypto.HashPassword(person.Password)
+	if err != nil {
+		log.Fatal(err)
+	}
+	res, err := stmt.Exec(person.Username, hashPassword)
 	if err != nil {
 		log.Fatal(err)
 	}
