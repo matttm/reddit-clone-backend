@@ -12,7 +12,10 @@ import (
 
 	"reddit-clone-backend/graph"
 	"reddit-clone-backend/graph/generated"
+	"reddit-clone-backend/internal/auth"
 	database "reddit-clone-backend/internal/pkg/db/mysql"
+
+	"github.com/go-chi/chi"
 )
 
 const defaultPort = "8080"
@@ -22,12 +25,17 @@ func main() {
 	if port == "" {
 		port = defaultPort
 	}
+
+	router := chi.NewRouter()
+	router.Use(auth.Middleware())
+
 	database.InitDB()
 	defer database.CloseDB()
 	database.Migrate()
+
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", srv)
+	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	router.Handle("/query", srv)
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Fatal(http.ListenAndServe(":"+port, router))
 }
