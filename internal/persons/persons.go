@@ -64,3 +64,16 @@ func GetAll() []Person {
 	}
 	return persons
 }
+
+func (person Person) GetUserIdByUsername() string {
+	stmt, err := database.Db.Prepare("SELECT ID FROM PERSONS WHERE USERNAME = ?")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer stmt.Close()
+	id, err := stmt.Query(person.Username)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return id
+}
