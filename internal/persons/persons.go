@@ -1,6 +1,7 @@
 package persons
 
 import (
+	"database/sql"
 	"log"
 	database "reddit-clone-backend/internal/pkg/db/mysql"
 	"reddit-clone-backend/pkg/crypto"
@@ -65,15 +66,22 @@ func GetAll() []Person {
 	return persons
 }
 
-func (person Person) GetUserIdByUsername() string {
-	stmt, err := database.Db.Prepare("SELECT ID FROM PERSONS WHERE USERNAME = ?")
+//GetUserIdByUsername check if a user exists in database by given username
+func GetUserIdByUsername(username string) (int, error) {
+	statement, err := database.Db.Prepare("select ID from PERSONS WHERE USERNAME = ?")
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer stmt.Close()
-	id, err := stmt.Query(person.Username)
+	row := statement.QueryRow(username)
+
+	var Id int
+	err = row.Scan(&Id)
 	if err != nil {
-		log.Fatal(err)
+		if err != sql.ErrNoRows {
+			log.Print(err)
+		}
+		return 0, err
 	}
-	return id
+
+	return Id, nil
 }
