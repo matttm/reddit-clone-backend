@@ -10,6 +10,7 @@ import (
 	"reddit-clone-backend/graph/model"
 	"reddit-clone-backend/internal/persons"
 	"reddit-clone-backend/internal/posts"
+	"reddit-clone-backend/pkg/jwt"
 	"strconv"
 )
 
@@ -53,11 +54,18 @@ func (r *mutationResolver) Register(ctx context.Context, credentials model.Crede
 
 	// TODO: hash the pw
 
+	/**
+	should i redo the schrma do i can return token?
+	**/
 	person.Password = credentials.Password
 
 	// TODO: validation checks
 
 	personId := person.Create()
+	token, err := jwt.GenerateToken(person.Username)
+	if err != nil {
+		return "", err
+	}
 	ret := &model.Person{ID: strconv.FormatInt(personId, 10), Username: credentials.Username}
 
 	// TODO: send JWT
