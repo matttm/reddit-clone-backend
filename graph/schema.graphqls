@@ -48,6 +48,7 @@ type Post {
 
 type PostValidationObject {
     post: Post!
+    token: String!
     errors: ValidationErrors
 }
 

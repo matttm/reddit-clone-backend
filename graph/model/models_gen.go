@@ -36,6 +36,7 @@ type PostInput struct {
 
 type PostValidationObject struct {
 	Post   *Post             `json:"post"`
+	Token  string            `json:"token"`
 	Errors *ValidationErrors `json:"errors"`
 }
 
