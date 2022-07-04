@@ -66,7 +66,7 @@ func (r *mutationResolver) Register(ctx context.Context, credentials model.Crede
 	if err != nil {
 		return &model.PersonValidationObject{
 			Person: nil,
-			Token:  "",
+			Token:  nil,
 			ValidationErrors: &model.ValidationErrors{
 				Errors: nil,
 			},
@@ -78,7 +78,7 @@ func (r *mutationResolver) Register(ctx context.Context, credentials model.Crede
 
 	validationObject := &model.PersonValidationObject{
 		Person: ret,
-		Token:  token,
+		Token:  &token,
 		ValidationErrors: &model.ValidationErrors{
 			Errors: nil,
 		},
