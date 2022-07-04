@@ -33,6 +33,7 @@ type ValidationErrors {
 
 type PersonValidationObject {
     person: Person
+    token: String
     validationErrors: ValidationErrors
 }
 
@@ -48,7 +49,6 @@ type Post {
 
 type PostValidationObject {
     post: Post!
-    token: String!
     errors: ValidationErrors
 }
 

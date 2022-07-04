@@ -64,7 +64,13 @@ func (r *mutationResolver) Register(ctx context.Context, credentials model.Crede
 	personId := person.Create()
 	token, err := jwt.GenerateToken(person.Username)
 	if err != nil {
-		return "", err
+		return &model.PersonValidationObject{
+			Person: nil,
+			Token:  "",
+			ValidationErrors: &model.ValidationErrors{
+				Errors: nil,
+			},
+		}, err
 	}
 	ret := &model.Person{ID: strconv.FormatInt(personId, 10), Username: credentials.Username}
 
@@ -72,6 +78,7 @@ func (r *mutationResolver) Register(ctx context.Context, credentials model.Crede
 
 	validationObject := &model.PersonValidationObject{
 		Person: ret,
+		Token:  token,
 		ValidationErrors: &model.ValidationErrors{
 			Errors: nil,
 		},

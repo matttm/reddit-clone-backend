@@ -62,6 +62,7 @@ type ComplexityRoot struct {
 
 	PersonValidationObject struct {
 		Person           func(childComplexity int) int
+		Token            func(childComplexity int) int
 		ValidationErrors func(childComplexity int) int
 	}
 
@@ -78,7 +79,6 @@ type ComplexityRoot struct {
 	PostValidationObject struct {
 		Errors func(childComplexity int) int
 		Post   func(childComplexity int) int
-		Token  func(childComplexity int) int
 	}
 
 	Query struct {
@@ -230,6 +230,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PersonValidationObject.Person(childComplexity), true
 
+	case "PersonValidationObject.token":
+		if e.complexity.PersonValidationObject.Token == nil {
+			break
+		}
+
+		return e.complexity.PersonValidationObject.Token(childComplexity), true
+
 	case "PersonValidationObject.validationErrors":
 		if e.complexity.PersonValidationObject.ValidationErrors == nil {
 			break
@@ -299,13 +306,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.PostValidationObject.Post(childComplexity), true
-
-	case "PostValidationObject.token":
-		if e.complexity.PostValidationObject.Token == nil {
-			break
-		}
-
-		return e.complexity.PostValidationObject.Token(childComplexity), true
 
 	case "Query.hello":
 		if e.complexity.Query.Hello == nil {
@@ -453,6 +453,7 @@ type ValidationErrors {
 
 type PersonValidationObject {
     person: Person
+    token: String
     validationErrors: ValidationErrors
 }
 
@@ -468,7 +469,6 @@ type Post {
 
 type PostValidationObject {
     post: Post!
-    token: String!
     errors: ValidationErrors
 }
 
@@ -713,8 +713,6 @@ func (ec *executionContext) fieldContext_Mutation_createPost(ctx context.Context
 			switch field.Name {
 			case "post":
 				return ec.fieldContext_PostValidationObject_post(ctx, field)
-			case "token":
-				return ec.fieldContext_PostValidationObject_token(ctx, field)
 			case "errors":
 				return ec.fieldContext_PostValidationObject_errors(ctx, field)
 			}
@@ -831,6 +829,8 @@ func (ec *executionContext) fieldContext_Mutation_login(ctx context.Context, fie
 			switch field.Name {
 			case "person":
 				return ec.fieldContext_PersonValidationObject_person(ctx, field)
+			case "token":
+				return ec.fieldContext_PersonValidationObject_token(ctx, field)
 			case "validationErrors":
 				return ec.fieldContext_PersonValidationObject_validationErrors(ctx, field)
 			}
@@ -892,6 +892,8 @@ func (ec *executionContext) fieldContext_Mutation_register(ctx context.Context, 
 			switch field.Name {
 			case "person":
 				return ec.fieldContext_PersonValidationObject_person(ctx, field)
+			case "token":
+				return ec.fieldContext_PersonValidationObject_token(ctx, field)
 			case "validationErrors":
 				return ec.fieldContext_PersonValidationObject_validationErrors(ctx, field)
 			}
@@ -1260,6 +1262,47 @@ func (ec *executionContext) fieldContext_PersonValidationObject_person(ctx conte
 				return ec.fieldContext_Person_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Person", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PersonValidationObject_token(ctx context.Context, field graphql.CollectedField, obj *model.PersonValidationObject) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PersonValidationObject_token(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Token, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PersonValidationObject_token(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PersonValidationObject",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -1683,50 +1726,6 @@ func (ec *executionContext) fieldContext_PostValidationObject_post(ctx context.C
 				return ec.fieldContext_Post_person(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Post", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _PostValidationObject_token(ctx context.Context, field graphql.CollectedField, obj *model.PostValidationObject) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_PostValidationObject_token(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Token, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_PostValidationObject_token(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "PostValidationObject",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -4192,6 +4191,10 @@ func (ec *executionContext) _PersonValidationObject(ctx context.Context, sel ast
 
 			out.Values[i] = ec._PersonValidationObject_person(ctx, field, obj)
 
+		case "token":
+
+			out.Values[i] = ec._PersonValidationObject_token(ctx, field, obj)
+
 		case "validationErrors":
 
 			out.Values[i] = ec._PersonValidationObject_validationErrors(ctx, field, obj)
@@ -4290,13 +4293,6 @@ func (ec *executionContext) _PostValidationObject(ctx context.Context, sel ast.S
 		case "post":
 
 			out.Values[i] = ec._PostValidationObject_post(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "token":
-
-			out.Values[i] = ec._PostValidationObject_token(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++

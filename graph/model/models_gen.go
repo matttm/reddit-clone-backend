@@ -16,6 +16,7 @@ type Person struct {
 
 type PersonValidationObject struct {
 	Person           *Person           `json:"person"`
+	Token            *string           `json:"token"`
 	ValidationErrors *ValidationErrors `json:"validationErrors"`
 }
 
@@ -36,7 +37,6 @@ type PostInput struct {
 
 type PostValidationObject struct {
 	Post   *Post             `json:"post"`
-	Token  string            `json:"token"`
 	Errors *ValidationErrors `json:"errors"`
 }
 
