@@ -46,6 +46,13 @@ func (r *mutationResolver) DeletePost(ctx context.Context, id float64) (int, err
 
 func (r *mutationResolver) Login(ctx context.Context, credentials model.Credentials) (*model.PersonValidationObject, error) {
 	var person persons.Person
+	validationObject := model.PersonValidationObject{
+		Person: nil,
+		Token:  nil,
+		ValidationErrors: &model.ValidationErrors{
+			Errors: nil,
+		},
+	}
 	person.Username = credentials.Username
 
 	// TODO: hash the pw
@@ -60,30 +67,31 @@ func (r *mutationResolver) Login(ctx context.Context, credentials model.Credenti
 	personId := person.Create()
 	token, err := jwt.GenerateToken(person.Username)
 	if err != nil {
-		return &model.PersonValidationObject{
-			Person: nil,
-			Token:  nil,
-			ValidationErrors: &model.ValidationErrors{
-				Errors: nil,
-			},
-		}, err
+		fmt.Errorf(err.Error())
+		validationObject.ValidationErrors.Errors = append(
+			validationObject.ValidationErrors.Errors,
+			err.Error(),
+		)
+		return &validationObject, err
 	}
 	ret := &model.Person{ID: strconv.FormatInt(personId, 10), Username: credentials.Username}
 
 	// TODO: send JWT
 
-	validationObject := &model.PersonValidationObject{
-		Person: ret,
-		Token:  &token,
-		ValidationErrors: &model.ValidationErrors{
-			Errors: nil,
-		},
-	}
-	return validationObject, nil
+	validationObject.Person = ret
+	validationObject.Token = &token
+	return &validationObject, nil
 }
 
 func (r *mutationResolver) Register(ctx context.Context, credentials model.Credentials) (*model.PersonValidationObject, error) {
 	var person persons.Person
+	validationObject := model.PersonValidationObject{
+		Person: nil,
+		Token:  nil,
+		ValidationErrors: &model.ValidationErrors{
+			Errors: nil,
+		},
+	}
 	person.Username = credentials.Username
 
 	// TODO: hash the pw
@@ -98,26 +106,20 @@ func (r *mutationResolver) Register(ctx context.Context, credentials model.Crede
 	personId := person.Create()
 	token, err := jwt.GenerateToken(person.Username)
 	if err != nil {
-		return &model.PersonValidationObject{
-			Person: nil,
-			Token:  nil,
-			ValidationErrors: &model.ValidationErrors{
-				Errors: nil,
-			},
-		}, err
+		fmt.Errorf(err.Error())
+		validationObject.ValidationErrors.Errors = append(
+			validationObject.ValidationErrors.Errors,
+			err.Error(),
+		)
+		return &validationObject, err
 	}
 	ret := &model.Person{ID: strconv.FormatInt(personId, 10), Username: credentials.Username}
 
 	// TODO: send JWT
 
-	validationObject := &model.PersonValidationObject{
-		Person: ret,
-		Token:  &token,
-		ValidationErrors: &model.ValidationErrors{
-			Errors: nil,
-		},
-	}
-	return validationObject, nil
+	validationObject.Person = ret
+	validationObject.Token = &token
+	return &validationObject, nil
 
 }
 
