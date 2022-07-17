@@ -67,7 +67,7 @@ func (r *mutationResolver) Login(ctx context.Context, credentials model.Credenti
 	personId := person.Create()
 	token, err := jwt.GenerateToken(person.Username)
 	if err != nil {
-		fmt.Errorf(err.Error())
+		fmt.Fprintf("Error: %s", err.Error())
 		validationObject.ValidationErrors.Errors = append(
 			validationObject.ValidationErrors.Errors,
 			err.Error(),
@@ -128,7 +128,15 @@ func (r *mutationResolver) UpdatePost(ctx context.Context, body string, id float
 }
 
 func (r *mutationResolver) RefreshToken(ctx context.Context, input model.RefreshTokenInput) (string, error) {
-	panic(fmt.Errorf("not implemented"))
+	username, err := jwt.ParseToken(input.Token)
+	if err != nil {
+		return "", fmt.Errorf("access denied")
+	}
+	token, err := jwt.GenerateToken(username)
+	if err != nil {
+		return "", err
+	}
+	return token, nil
 }
 
 func (r *queryResolver) Hello(ctx context.Context) (string, error) {
