@@ -6,6 +6,7 @@ package graph
 import (
 	"context"
 	"fmt"
+	"log"
 	"reddit-clone-backend/graph/generated"
 	"reddit-clone-backend/graph/model"
 	"reddit-clone-backend/internal/persons"
@@ -67,7 +68,7 @@ func (r *mutationResolver) Login(ctx context.Context, credentials model.Credenti
 	personId := person.Create()
 	token, err := jwt.GenerateToken(person.Username)
 	if err != nil {
-		fmt.Fprintf("Error: %s", err.Error())
+		log.Panicf("Error: %s", err.Error())
 		validationObject.ValidationErrors.Errors = append(
 			validationObject.ValidationErrors.Errors,
 			err.Error(),
@@ -106,7 +107,7 @@ func (r *mutationResolver) Register(ctx context.Context, credentials model.Crede
 	personId := person.Create()
 	token, err := jwt.GenerateToken(person.Username)
 	if err != nil {
-		fmt.Errorf(err.Error())
+		log.Panicf("Error: %s", err.Error())
 		validationObject.ValidationErrors.Errors = append(
 			validationObject.ValidationErrors.Errors,
 			err.Error(),
