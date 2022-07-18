@@ -42,7 +42,10 @@ func (r *mutationResolver) CreatePost(ctx context.Context, post model.PostInput)
 }
 
 func (r *mutationResolver) DeletePost(ctx context.Context, id float64) (int, error) {
-	panic(fmt.Errorf("not implemented"))
+	var _post posts.Post
+	_post.Id = strconv.FormatFloat(id, 10)
+	_post.Delete()
+	return 1, nil
 }
 
 func (r *mutationResolver) Login(ctx context.Context, credentials model.Credentials) (*model.PersonValidationObject, error) {
@@ -141,7 +144,7 @@ func (r *mutationResolver) RefreshToken(ctx context.Context, input model.Refresh
 }
 
 func (r *queryResolver) Hello(ctx context.Context) (string, error) {
-	panic(fmt.Errorf("not implemented"))
+	var post posts.Post
 }
 
 func (r *queryResolver) Persons(ctx context.Context) ([]*model.Person, error) {
