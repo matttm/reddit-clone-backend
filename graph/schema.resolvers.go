@@ -43,7 +43,7 @@ func (r *mutationResolver) CreatePost(ctx context.Context, post model.PostInput)
 
 func (r *mutationResolver) DeletePost(ctx context.Context, id float64) (int, error) {
 	var _post posts.Post
-	_post.Id = strconv.FormatFloat(id, 10)
+	_post.Id = strconv.FormatFloat(id, 'E', -1, 32)
 	_post.Delete()
 	return 1, nil
 }
@@ -144,7 +144,7 @@ func (r *mutationResolver) RefreshToken(ctx context.Context, input model.Refresh
 }
 
 func (r *queryResolver) Hello(ctx context.Context) (string, error) {
-	var post posts.Post
+	return "Hello", nil
 }
 
 func (r *queryResolver) Persons(ctx context.Context) ([]*model.Person, error) {
