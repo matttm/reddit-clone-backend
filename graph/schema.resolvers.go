@@ -161,7 +161,8 @@ func (r *queryResolver) Persons(ctx context.Context) ([]*model.Person, error) {
 }
 
 func (r *queryResolver) Post(ctx context.Context, id int) (*model.Post, error) {
-	panic(fmt.Errorf("not implemented"))
+	var post model.Post
+	dbPost := posts.Get(id)
 }
 
 /**

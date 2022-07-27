@@ -89,3 +89,17 @@ func GetAll() []Post {
 	}
 	return posts
 }
+
+func Get(id int) Post {
+	var post Post
+	stmt, err := database.Db.Prepare("SELECT ID, TITLE, BODY FROM POSTS WHERE ID = ?")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer stmt.Close()
+	row := stmt.QueryRow(id)
+	err = row.Scan(&post.Id, &post.Title, &post.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
