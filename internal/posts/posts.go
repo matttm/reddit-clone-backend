@@ -102,4 +102,5 @@ func Get(id int) Post {
 	if err != nil {
 		log.Fatal(err)
 	}
+	return post
 }

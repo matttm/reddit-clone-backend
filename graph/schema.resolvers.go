@@ -128,7 +128,18 @@ func (r *mutationResolver) Register(ctx context.Context, credentials model.Crede
 }
 
 func (r *mutationResolver) UpdatePost(ctx context.Context, body string, id float64, title string) (*model.Post, error) {
-	panic(fmt.Errorf("not implemented"))
+	var _post posts.Post
+	_post.Title = title
+	_post.Body = body
+	postID := _post.Update()
+	ret := &model.Post{
+		ID:    strconv.FormatInt(postID, 10),
+		Title: _post.Title,
+		Body:  _post.Body,
+		Views: _post.Views,
+	}
+
+	return ret, nil
 }
 
 func (r *mutationResolver) RefreshToken(ctx context.Context, input model.RefreshTokenInput) (string, error) {
@@ -161,8 +172,13 @@ func (r *queryResolver) Persons(ctx context.Context) ([]*model.Person, error) {
 }
 
 func (r *queryResolver) Post(ctx context.Context, id int) (*model.Post, error) {
-	var post model.Post
 	dbPost := posts.Get(id)
+	post := &model.Post{
+		ID:    dbPost.Id,
+		Title: dbPost.Title,
+		Body:  dbPost.Body,
+	}
+	return post, nil
 }
 
 /**
