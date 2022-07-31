@@ -6,6 +6,18 @@ This is the new backend for my reddit-clone-backend written in Go. The original 
 
 ## Getting Started
 
+## Running
+
+First you will need to have the docker container running
+```
+docker compose up
+```
+Then in another terminal. you can start the server.
+```
+go server.go
+```
+**Note**, both commands need to be run in the root of the project.
+
 ## Helpful Commands
 
 ### Migrate
