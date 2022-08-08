@@ -110,11 +110,11 @@ func (r *mutationResolver) Register(ctx context.Context, credentials model.Crede
 		},
 	}
 	person.Username = credentials.Username
-
-	// TODO: hash the pw
 	person.Password = credentials.Password
 
 	// TODO: validation checks
+	// check username length
+	// check password complexity
 
 	personId := person.Create()
 	token, err := jwt.GenerateToken(person.Username)
@@ -128,8 +128,6 @@ func (r *mutationResolver) Register(ctx context.Context, credentials model.Crede
 	}
 	ret := &model.Person{ID: strconv.FormatInt(personId, 10), Username: credentials.Username}
 
-	// TODO: send JWT
-
 	validationObject.Person = ret
 	validationObject.Token = &token
 	return &validationObject, nil
@@ -142,10 +140,12 @@ func (r *mutationResolver) UpdatePost(ctx context.Context, body string, id float
 	_post.Body = body
 	postID := _post.Update()
 	ret := &model.Post{
-		ID:    strconv.FormatInt(postID, 10),
-		Title: _post.Title,
-		Body:  _post.Body,
-		Views: _post.Views,
+		ID:        strconv.FormatInt(postID, 10),
+		Title:     _post.Title,
+		Body:      _post.Body,
+		Views:     _post.Views,
+		CreatedAt: _post.CreatedAt,
+		UpdatedAt: _post.UpdatedAt,
 	}
 
 	return ret, nil
@@ -196,9 +196,11 @@ func (r *queryResolver) Persons(ctx context.Context) ([]*model.Person, error) {
 func (r *queryResolver) Post(ctx context.Context, id int) (*model.Post, error) {
 	dbPost := posts.Get(id)
 	post := &model.Post{
-		ID:    dbPost.Id,
-		Title: dbPost.Title,
-		Body:  dbPost.Body,
+		ID:        dbPost.Id,
+		Title:     dbPost.Title,
+		Body:      dbPost.Body,
+		CreatedAt: dbPost.CreatedAt,
+		UpdatedAt: dbPost.UpdatedAt,
 	}
 	return post, nil
 }
@@ -223,9 +225,9 @@ func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
 			ID:        v.Id,
 			Title:     v.Title,
 			Body:      v.Body,
+			Views:     v.Views,
 			CreatedAt: v.CreatedAt,
 			UpdatedAt: v.UpdatedAt,
-			Views:     v.Views,
 		}
 		ret = append(ret, tmp)
 	}
