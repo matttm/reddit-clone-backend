@@ -41,7 +41,7 @@ func (person Person) Create() int64 {
 }
 
 func GetAll() []Person {
-	stmt, err := database.Db.Prepare("SELECT ID, USERNAME FROM PERSONS")
+	stmt, err := database.Db.Prepare("SELECT ID, USERNAME, CREATED_AT, UPDATED_AT FROM PERSONS")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -54,7 +54,7 @@ func GetAll() []Person {
 	var persons []Person
 	for rows.Next() {
 		var person Person
-		err := rows.Scan(&person.Id, &person.Username)
+		err := rows.Scan(&person.Id, &person.Username, &person.CreatedAt, &person.UpdatedAt)
 		if err != nil {
 			log.Fatal(err)
 		}

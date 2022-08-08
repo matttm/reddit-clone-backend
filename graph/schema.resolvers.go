@@ -112,10 +112,6 @@ func (r *mutationResolver) Register(ctx context.Context, credentials model.Crede
 	person.Username = credentials.Username
 
 	// TODO: hash the pw
-
-	/**
-	should i redo the schrma do i can return token?
-	**/
 	person.Password = credentials.Password
 
 	// TODO: validation checks
@@ -187,8 +183,10 @@ func (r *queryResolver) Persons(ctx context.Context) ([]*model.Person, error) {
 	var persons []*model.Person
 	for _, v := range dbPersons {
 		tmp := &model.Person{
-			ID:       v.Id,
-			Username: v.Username,
+			ID:        v.Id,
+			Username:  v.Username,
+			CreatedAt: v.CreatedAt,
+			UpdatedAt: v.UpdatedAt,
 		}
 		persons = append(persons, tmp)
 	}
@@ -222,10 +220,12 @@ func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
 	var ret []*model.Post
 	for _, v := range posts {
 		tmp := &model.Post{
-			ID:    v.Id,
-			Title: v.Title,
-			Body:  v.Body,
-			Views: v.Views,
+			ID:        v.Id,
+			Title:     v.Title,
+			Body:      v.Body,
+			CreatedAt: v.CreatedAt,
+			UpdatedAt: v.UpdatedAt,
+			Views:     v.Views,
 		}
 		ret = append(ret, tmp)
 	}

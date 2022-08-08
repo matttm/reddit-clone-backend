@@ -65,7 +65,7 @@ func (post Post) Delete() int64 {
 }
 
 func GetAll() []Post {
-	stmt, err := database.Db.Prepare("SELECT ID, TITLE, BODY FROM POSTS")
+	stmt, err := database.Db.Prepare("SELECT ID, TITLE, BODY, CREATED_AT, UPDATED_AT FROM POSTS")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -78,7 +78,7 @@ func GetAll() []Post {
 	var posts []Post
 	for rows.Next() {
 		var post Post
-		err := rows.Scan(&post.Id, &post.Title, &post.Body)
+		err := rows.Scan(&post.Id, &post.Title, &post.Body, &post.CreatedAt, &post.UpdatedAt)
 		if err != nil {
 			log.Fatal(err)
 		}
