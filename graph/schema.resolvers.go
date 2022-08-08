@@ -87,6 +87,19 @@ func (r *mutationResolver) Login(ctx context.Context, credentials model.Credenti
 	return &validationObject, nil
 }
 
+/**
+	@function create a user
+
+	mutation createUser {
+		register(credentials: { username: "test", password: "test" }) {
+			person {
+				id
+				username
+				createdAt
+			}
+		}
+	}
+**/
 func (r *mutationResolver) Register(ctx context.Context, credentials model.Credentials) (*model.PersonValidationObject, error) {
 	var person persons.Person
 	validationObject := model.PersonValidationObject{
@@ -158,6 +171,17 @@ func (r *queryResolver) Hello(ctx context.Context) (string, error) {
 	return "Hello", nil
 }
 
+/**
+	@function get all persons
+
+	query getPersons{
+		persons {
+			id
+			username
+			createdAt
+		}
+	}
+**/
 func (r *queryResolver) Persons(ctx context.Context) ([]*model.Person, error) {
 	dbPersons := persons.GetAll()
 	var persons []*model.Person
@@ -182,13 +206,16 @@ func (r *queryResolver) Post(ctx context.Context, id int) (*model.Post, error) {
 }
 
 /**
-query {
-  posts {
-    title
-    body
-    id
-  }
-}
+	@function get all posts
+
+	query getPosts {
+		posts {
+			title
+			body
+			views
+			id
+		}
+	}
 **/
 func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
 	posts := posts.GetAll()
