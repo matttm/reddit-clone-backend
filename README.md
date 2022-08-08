@@ -14,7 +14,7 @@ docker compose up
 ```
 Then in another terminal. you can start the server.
 ```
-go server.go
+go run server.go
 ```
 **Note**, both commands need to be run in the root of the project.
 
