@@ -15,6 +15,8 @@ import (
 	"reddit-clone-backend/internal/auth"
 	database "reddit-clone-backend/internal/pkg/db/mysql"
 
+	cors "github.com/rs/cors"
+
 	"github.com/go-chi/chi"
 )
 
@@ -27,6 +29,15 @@ func main() {
 	}
 
 	router := chi.NewRouter()
+
+	// Add CORS middleware around every request
+	// See https://github.com/rs/cors for full option listing
+	router.Use(cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:3000"},
+		AllowCredentials: true,
+		Debug:            true,
+	}).Handler)
+
 	router.Use(auth.Middleware())
 
 	database.InitDB()
