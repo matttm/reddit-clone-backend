@@ -41,7 +41,7 @@ func (person Person) Create() int64 {
 }
 
 func Authenticate(username string, password string) bool {
-	statement, err := database.Db.Prepare("select Password from Users WHERE Username = ?")
+	statement, err := database.Db.Prepare("SELECT PASSWORD FROM PERSONS WHERE USERNAME = ?")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -88,7 +88,7 @@ func GetAll() []Person {
 
 //GetUserIdByUsername check if a user exists in database by given username
 func GetUserIdByUsername(username string) (int, error) {
-	statement, err := database.Db.Prepare("select ID from PERSONS WHERE USERNAME = ?")
+	statement, err := database.Db.Prepare("SELECT ID FROM PERSONS WHERE USERNAME = ?")
 	if err != nil {
 		log.Fatal(err)
 	}

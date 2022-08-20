@@ -65,6 +65,7 @@ func (r *mutationResolver) DeletePost(ctx context.Context, id float64) (int, err
   *
 **/
 func (r *mutationResolver) Login(ctx context.Context, credentials model.Credentials) (*model.PersonValidationObject, error) {
+	log.Printf("Attempting login for %s", credentials.Username)
 	validationObject := model.PersonValidationObject{
 		Person: nil,
 		Token:  nil,
@@ -83,6 +84,7 @@ func (r *mutationResolver) Login(ctx context.Context, credentials model.Credenti
 	}
 	// determine authenticity of credentials
 	isAuth := persons.Authenticate(credentials.Username, credentials.Password)
+	log.Printf("User %s authenticated", credentials.Username)
 	//
 	// if user cannot be authenticated, throw an error
 	if !isAuth {
@@ -135,6 +137,7 @@ func (r *mutationResolver) Login(ctx context.Context, credentials model.Credenti
 	}
 **/
 func (r *mutationResolver) Register(ctx context.Context, credentials model.Credentials) (*model.PersonValidationObject, error) {
+	log.Printf("Attempting registration for %s", credentials.Username)
 	var person persons.Person
 	validationObject := model.PersonValidationObject{
 		Person: nil,
