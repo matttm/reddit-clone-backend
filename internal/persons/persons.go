@@ -40,6 +40,26 @@ func (person Person) Create() int64 {
 	return id
 }
 
+func Authenticate(username string, password string) bool {
+	statement, err := database.Db.Prepare("select Password from Users WHERE Username = ?")
+	if err != nil {
+		log.Fatal(err)
+	}
+	row := statement.QueryRow(username)
+
+	var hashedPassword string
+	err = row.Scan(&hashedPassword)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false
+		} else {
+			log.Fatal(err)
+		}
+	}
+
+	return crypto.CheckPasswordHash(password, hashedPassword)
+}
+
 func GetAll() []Person {
 	stmt, err := database.Db.Prepare("SELECT ID, USERNAME, CREATED_AT, UPDATED_AT FROM PERSONS")
 	if err != nil {

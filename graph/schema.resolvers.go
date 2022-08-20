@@ -49,7 +49,6 @@ func (r *mutationResolver) DeletePost(ctx context.Context, id float64) (int, err
 }
 
 func (r *mutationResolver) Login(ctx context.Context, credentials model.Credentials) (*model.PersonValidationObject, error) {
-	var person persons.Person
 	validationObject := model.PersonValidationObject{
 		Person: nil,
 		Token:  nil,
@@ -57,19 +56,23 @@ func (r *mutationResolver) Login(ctx context.Context, credentials model.Credenti
 			Errors: nil,
 		},
 	}
-	person.Username = credentials.Username
-
-	// TODO: hash the pw
-
-	/**
-	should i redo the schrma do i can return token?
-	**/
-	person.Password = credentials.Password
-
+	if credentials.Username == "" {
+		// throw error if theres no username
+	}
 	// TODO: validation checks
 
-	personId := person.Create()
-	token, err := jwt.GenerateToken(person.Username)
+	isAuth := persons.Authenticate(credentials.Username, credentials.Password)
+
+	if !isAuth {
+		log.Panicf("Error: credentials do not match user")
+		validationObject.ValidationErrors.Errors = append(
+			validationObject.ValidationErrors.Errors,
+			"Username or password is incorrect",
+		)
+		return &validationObject, nil
+	}
+
+	token, err := jwt.GenerateToken(credentials.Username)
 	if err != nil {
 		log.Panicf("Error: %s", err.Error())
 		validationObject.ValidationErrors.Errors = append(
@@ -78,7 +81,16 @@ func (r *mutationResolver) Login(ctx context.Context, credentials model.Credenti
 		)
 		return &validationObject, err
 	}
-	ret := &model.Person{ID: strconv.FormatInt(personId, 10), Username: credentials.Username}
+	personId, err := persons.GetUserIdByUsername(credentials.Username)
+	if err != nil {
+		log.Panicf("Error: %s", err.Error())
+		validationObject.ValidationErrors.Errors = append(
+			validationObject.ValidationErrors.Errors,
+			err.Error(),
+		)
+		return &validationObject, err
+	}
+	ret := &model.Person{ID: fmt.Sprint(personId), Username: credentials.Username}
 
 	// TODO: send JWT
 
