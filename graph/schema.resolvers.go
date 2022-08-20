@@ -48,6 +48,11 @@ func (r *mutationResolver) DeletePost(ctx context.Context, id float64) (int, err
 	return 1, nil
 }
 
+/**
+  * @function Login
+  * @description authenticate a user that exists in the system
+  *
+**/
 func (r *mutationResolver) Login(ctx context.Context, credentials model.Credentials) (*model.PersonValidationObject, error) {
 	validationObject := model.PersonValidationObject{
 		Person: nil,
@@ -56,13 +61,19 @@ func (r *mutationResolver) Login(ctx context.Context, credentials model.Credenti
 			Errors: nil,
 		},
 	}
+	// check whether a username was orovided
 	if credentials.Username == "" {
-		// throw error if theres no username
+		log.Panicf("Error: username was not provided")
+		validationObject.ValidationErrors.Errors = append(
+			validationObject.ValidationErrors.Errors,
+			"Username was not provided",
+		)
+		return &validationObject, nil
 	}
-	// TODO: validation checks
-
+	// determine authenticity of credentials
 	isAuth := persons.Authenticate(credentials.Username, credentials.Password)
-
+	//
+	// if user cannot be authenticated, throw an error
 	if !isAuth {
 		log.Panicf("Error: credentials do not match user")
 		validationObject.ValidationErrors.Errors = append(
@@ -71,7 +82,7 @@ func (r *mutationResolver) Login(ctx context.Context, credentials model.Credenti
 		)
 		return &validationObject, nil
 	}
-
+	// generate token
 	token, err := jwt.GenerateToken(credentials.Username)
 	if err != nil {
 		log.Panicf("Error: %s", err.Error())
@@ -81,6 +92,8 @@ func (r *mutationResolver) Login(ctx context.Context, credentials model.Credenti
 		)
 		return &validationObject, err
 	}
+	//
+	// sinxe user was authenticated without error, get the user id to return
 	personId, err := persons.GetUserIdByUsername(credentials.Username)
 	if err != nil {
 		log.Panicf("Error: %s", err.Error())
@@ -91,8 +104,6 @@ func (r *mutationResolver) Login(ctx context.Context, credentials model.Credenti
 		return &validationObject, err
 	}
 	ret := &model.Person{ID: fmt.Sprint(personId), Username: credentials.Username}
-
-	// TODO: send JWT
 
 	validationObject.Person = ret
 	validationObject.Token = &token
