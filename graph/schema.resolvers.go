@@ -9,6 +9,7 @@ import (
 	"log"
 	"reddit-clone-backend/graph/generated"
 	"reddit-clone-backend/graph/model"
+	auth "reddit-clone-backend/internal/auth"
 	"reddit-clone-backend/internal/persons"
 	"reddit-clone-backend/internal/posts"
 	"reddit-clone-backend/pkg/jwt"
@@ -16,18 +17,28 @@ import (
 )
 
 /**
-mutation create{
-  createPost(post: {title: "test", body: "test body" }){
-    post {
-      id
-      title
-      body
-    }
-  }
-}
+  * @function CreatePost
+  * @description create a post if use is authenticated
+  *
+	mutation create{
+		createPost(post: {title: "test", body: "test body" }){
+			post {
+				id
+				title
+				body
+			}
+		}
+	}
 **/
 func (r *mutationResolver) CreatePost(ctx context.Context, post model.PostInput) (*model.PostValidationObject, error) {
+	// determine user suthenticity
+	person := auth.ForContext(ctx)
+	if person == nil {
+		return &model.PostValidationObject{}, fmt.Errorf("access denied")
+	}
+	// create post
 	var _post posts.Post
+	_post.Person = person
 	_post.Title = post.Title
 	_post.Body = post.Body
 	postID := _post.Save()
