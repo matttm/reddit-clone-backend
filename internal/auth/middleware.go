@@ -21,6 +21,7 @@ func Middleware() func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			log.Print("In authentication middleware")
 			header := r.Header.Get("Authorization")
+			log.Printf("Token: %s", header)
 
 			// Allow unauthenticated users in
 			if header == "" {

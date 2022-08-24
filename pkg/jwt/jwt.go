@@ -2,6 +2,7 @@ package jwt
 
 import (
 	"log"
+	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -30,6 +31,11 @@ func GenerateToken(username string) (string, error) {
 
 // ParseToken parses a jwt token and returns the username in it's claims
 func ParseToken(tokenStr string) (string, error) {
+	//
+	// string will be in format "Bearer <token>"
+	// so element 1 from split will be the token
+	//
+	tokenStr = strings.Split(tokenStr, " ")[1]
 	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 		return SecretKey, nil
 	})
