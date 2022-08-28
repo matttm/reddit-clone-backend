@@ -67,7 +67,7 @@ func (post Post) Delete() int64 {
 func GetAll() []Post {
 	stmt, err := database.Db.Prepare(`
 	SELECT post.ID, post.TITLE, post.BODY, post.VIEWS, person.ID,
-	person,USERNAME, person.CREATED_AT, post.CREATED_AT, post.UPDATED_AT FROM POSTS post
+	person.USERNAME, person.CREATED_AT, post.CREATED_AT, post.UPDATED_AT FROM POSTS post
 	JOIN PERSONS person ON post.PERSON_ID = person.ID
 	`)
 	if err != nil {
