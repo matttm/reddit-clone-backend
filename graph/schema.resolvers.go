@@ -259,9 +259,13 @@ func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
 	var ret []*model.Post
 	for _, v := range posts {
 		tmp := &model.Post{
-			ID:        v.Id,
-			Title:     v.Title,
-			Body:      v.Body,
+			ID:    v.Id,
+			Title: v.Title,
+			Body:  v.Body,
+			Person: &model.Person{
+				ID:       v.Person.Id,
+				Username: v.Person.Username,
+			},
 			Views:     v.Views,
 			CreatedAt: v.CreatedAt,
 			UpdatedAt: v.UpdatedAt,
