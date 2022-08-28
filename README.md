@@ -18,6 +18,14 @@ go run server.go
 ```
 **Note**, both commands need to be run in the root of the project.
 
+### Generating data
+
+Once the docker container is running, start the server once to run the migrations, and run the following command to generate posts and persons to the database.
+
+```
+go run scripts/generate.go
+```
+
 ## Helpful Commands
 
 ### Migrate
