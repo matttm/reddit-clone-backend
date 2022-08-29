@@ -236,6 +236,11 @@ func (r *queryResolver) Post(ctx context.Context, id int) (*model.Post, error) {
 		ID:        dbPost.Id,
 		Title:     dbPost.Title,
 		Body:      dbPost.Body,
+		Person: &model.Person{
+			ID:       dbPost.Person.Id,
+			Username: dbPost.Person.Username,
+		},
+		Views:     dbPost.Views,
 		CreatedAt: dbPost.CreatedAt,
 		UpdatedAt: dbPost.UpdatedAt,
 	}

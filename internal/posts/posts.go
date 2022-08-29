@@ -67,8 +67,8 @@ func (post Post) Delete() int64 {
 func GetAll() []Post {
 	stmt, err := database.Db.Prepare(`
 	SELECT post.ID, post.TITLE, post.BODY, post.VIEWS, person.ID,
-	person.USERNAME, person.CREATED_AT, post.CREATED_AT, post.UPDATED_AT FROM POSTS post
-	JOIN PERSONS person ON post.PERSON_ID = person.ID
+		person.USERNAME, person.CREATED_AT, post.CREATED_AT, post.UPDATED_AT FROM POSTS post
+		JOIN PERSONS person ON post.PERSON_ID = person.ID
 	`)
 	if err != nil {
 		log.Fatal(err)
@@ -107,14 +107,29 @@ func GetAll() []Post {
 }
 
 func Get(id int) Post {
+	var person persons.Person
 	var post Post
-	stmt, err := database.Db.Prepare("SELECT ID, TITLE, BODY FROM POSTS WHERE ID = ?")
+	stmt, err := database.Db.Prepare(`
+	SELECT post.ID, post.TITLE, post.BODY, post.VIEWS, person.ID,
+		person.USERNAME, person.CREATED_AT, post.CREATED_AT, post.UPDATED_AT FROM POSTS post
+		JOIN PERSONS person ON post.PERSON_ID = person.ID WHERE ID = ?
+	`)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer stmt.Close()
 	row := stmt.QueryRow(id)
-	err = row.Scan(&post.Id, &post.Title, &post.Body)
+	err = row.Scan(
+		&post.Id,
+		&post.Title,
+		&post.Body,
+		&post.Views,
+		&person.Id,
+		&person.Username,
+		&person.CreatedAt,
+		&post.CreatedAt,
+		&post.UpdatedAt,
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
