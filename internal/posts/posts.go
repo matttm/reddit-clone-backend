@@ -112,7 +112,7 @@ func Get(id int) Post {
 	stmt, err := database.Db.Prepare(`
 	SELECT post.ID, post.TITLE, post.BODY, post.VIEWS, person.ID,
 		person.USERNAME, person.CREATED_AT, post.CREATED_AT, post.UPDATED_AT FROM POSTS post
-		JOIN PERSONS person ON post.PERSON_ID = person.ID WHERE ID = ?
+		JOIN PERSONS person ON post.PERSON_ID = person.ID WHERE post.ID = ?
 	`)
 	if err != nil {
 		log.Fatal(err)
@@ -130,6 +130,7 @@ func Get(id int) Post {
 		&post.CreatedAt,
 		&post.UpdatedAt,
 	)
+	post.Person = &person
 	if err != nil {
 		log.Fatal(err)
 	}
