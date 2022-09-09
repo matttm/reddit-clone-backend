@@ -8,6 +8,7 @@ type Mutation {
     deletePost(id: Float!): Int!
     login(credentials: Credentials!): PersonValidationObject!
     register(credentials: Credentials!): PersonValidationObject!
+    
     updatePost(body: String!, id: Float!, title: String!): Post!
     refreshToken(input: RefreshTokenInput!): String!
 }
@@ -17,6 +18,7 @@ type Query {
     persons: [Person!]!
     post(id: Int!): Post!
     posts: [Post!]!
+    isAuthenticated: PersonValidationObject!;
 }
 
 type Person {

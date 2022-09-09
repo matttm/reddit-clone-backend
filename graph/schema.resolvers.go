@@ -16,20 +16,23 @@ import (
 	"strconv"
 )
 
-/**
-  * @function CreatePost
-  * @description create a post if use is authenticated
-  *
-	mutation create{
-		createPost(post: {title: "test", body: "test body" }){
-			post {
-				id
-				title
-				body
-			}
-		}
-	}
-**/
+/*
+*
+  - @function CreatePost
+  - @description create a post if use is authenticated
+    *
+    mutation create{
+    createPost(post: {title: "test", body: "test body" }){
+    post {
+    id
+    title
+    body
+    }
+    }
+    }
+
+*
+*/
 func (r *mutationResolver) CreatePost(ctx context.Context, post model.PostInput) (*model.PostValidationObject, error) {
 	// determine user suthenticity
 	person := auth.ForContext(ctx)
@@ -123,7 +126,9 @@ func (r *mutationResolver) Login(ctx context.Context, credentials model.Credenti
 	return &validationObject, nil
 }
 
-/**
+/*
+*
+
 	@function create a user
 
 	mutation createUser {
@@ -135,7 +140,9 @@ func (r *mutationResolver) Login(ctx context.Context, credentials model.Credenti
 			}
 		}
 	}
-**/
+
+*
+*/
 func (r *mutationResolver) Register(ctx context.Context, credentials model.Credentials) (*model.PersonValidationObject, error) {
 	log.Printf("Attempting registration for %s", credentials.Username)
 	var person persons.Person
@@ -204,7 +211,9 @@ func (r *queryResolver) Hello(ctx context.Context) (string, error) {
 	return "Hello", nil
 }
 
-/**
+/*
+*
+
 	@function get all persons
 
 	query getPersons{
@@ -214,7 +223,9 @@ func (r *queryResolver) Hello(ctx context.Context) (string, error) {
 			createdAt
 		}
 	}
-**/
+
+*
+*/
 func (r *queryResolver) Persons(ctx context.Context) ([]*model.Person, error) {
 	dbPersons := persons.GetAll()
 	var persons []*model.Person
@@ -233,12 +244,12 @@ func (r *queryResolver) Persons(ctx context.Context) ([]*model.Person, error) {
 func (r *queryResolver) Post(ctx context.Context, id int) (*model.Post, error) {
 	dbPost := posts.Get(id)
 	post := &model.Post{
-		ID:        dbPost.Id,
-		Title:     dbPost.Title,
-		Body:      dbPost.Body,
+		ID:    dbPost.Id,
+		Title: dbPost.Title,
+		Body:  dbPost.Body,
 		Person: &model.Person{
-			ID:       dbPost.Person.Id,
-			Username: dbPost.Person.Username,
+			ID:        dbPost.Person.Id,
+			Username:  dbPost.Person.Username,
 			CreatedAt: dbPost.Person.CreatedAt,
 		},
 		Views:     dbPost.Views,
@@ -248,7 +259,9 @@ func (r *queryResolver) Post(ctx context.Context, id int) (*model.Post, error) {
 	return post, nil
 }
 
-/**
+/*
+*
+
 	@function get all posts
 
 	query getPosts {
@@ -259,7 +272,9 @@ func (r *queryResolver) Post(ctx context.Context, id int) (*model.Post, error) {
 			id
 		}
 	}
-**/
+
+*
+*/
 func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
 	posts := posts.GetAll()
 	var ret []*model.Post
@@ -279,6 +294,10 @@ func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
 		ret = append(ret, tmp)
 	}
 	return ret, nil
+}
+
+func (r *queryResolver) isAuthenticated(ctx context.Context) (*model.PersonValidationObject, error) {
+	return nil, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.
