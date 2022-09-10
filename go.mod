@@ -4,10 +4,12 @@ go 1.18
 
 require (
 	github.com/99designs/gqlgen v0.17.9
+	github.com/brianvoe/gofakeit/v6 v6.18.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-chi/chi v1.5.4
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/golang-migrate/migrate v3.5.4+incompatible
+	github.com/rs/cors v1.8.2
 	github.com/vektah/gqlparser/v2 v2.4.4
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d
 )
@@ -15,7 +17,6 @@ require (
 require (
 	github.com/Microsoft/go-winio v0.5.2 // indirect
 	github.com/agnivade/levenshtein v1.1.1 // indirect
-	github.com/brianvoe/gofakeit/v6 v6.18.0 // indirect
 	github.com/containerd/containerd v1.6.1 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.1 // indirect
 	github.com/docker/distribution v2.8.1+incompatible // indirect
@@ -30,7 +31,6 @@ require (
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.0.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/rs/cors v1.8.2 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/urfave/cli/v2 v2.8.1 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect

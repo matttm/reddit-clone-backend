@@ -82,10 +82,11 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Hello   func(childComplexity int) int
-		Persons func(childComplexity int) int
-		Post    func(childComplexity int, id int) int
-		Posts   func(childComplexity int) int
+		Hello           func(childComplexity int) int
+		IsAuthenticated func(childComplexity int) int
+		Persons         func(childComplexity int) int
+		Post            func(childComplexity int, id int) int
+		Posts           func(childComplexity int) int
 	}
 
 	ValidationErrors struct {
@@ -106,6 +107,7 @@ type QueryResolver interface {
 	Persons(ctx context.Context) ([]*model.Person, error)
 	Post(ctx context.Context, id int) (*model.Post, error)
 	Posts(ctx context.Context) ([]*model.Post, error)
+	IsAuthenticated(ctx context.Context) (*model.PersonValidationObject, error)
 }
 
 type executableSchema struct {
@@ -314,6 +316,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Hello(childComplexity), true
 
+	case "Query.isAuthenticated":
+		if e.complexity.Query.IsAuthenticated == nil {
+			break
+		}
+
+		return e.complexity.Query.IsAuthenticated(childComplexity), true
+
 	case "Query.persons":
 		if e.complexity.Query.Persons == nil {
 			break
@@ -437,6 +446,7 @@ type Query {
     persons: [Person!]!
     post(id: Int!): Post!
     posts: [Post!]!
+    isAuthenticated: PersonValidationObject!
 }
 
 type Person {
@@ -2000,6 +2010,58 @@ func (ec *executionContext) fieldContext_Query_posts(ctx context.Context, field 
 				return ec.fieldContext_Post_person(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Post", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_isAuthenticated(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_isAuthenticated(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().IsAuthenticated(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.PersonValidationObject)
+	fc.Result = res
+	return ec.marshalNPersonValidationObject2ᚖredditᚑcloneᚑbackendᚋgraphᚋmodelᚐPersonValidationObject(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_isAuthenticated(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "person":
+				return ec.fieldContext_PersonValidationObject_person(ctx, field)
+			case "token":
+				return ec.fieldContext_PersonValidationObject_token(ctx, field)
+			case "validationErrors":
+				return ec.fieldContext_PersonValidationObject_validationErrors(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PersonValidationObject", field.Name)
 		},
 	}
 	return fc, nil
@@ -4410,6 +4472,29 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_posts(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "isAuthenticated":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_isAuthenticated(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}

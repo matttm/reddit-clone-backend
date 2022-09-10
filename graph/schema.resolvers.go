@@ -296,8 +296,8 @@ func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
 	return ret, nil
 }
 
-func (r *queryResolver) isAuthenticated(ctx context.Context) (*model.PersonValidationObject, error) {
-	return nil, nil
+func (r *queryResolver) IsAuthenticated(ctx context.Context) (*model.PersonValidationObject, error) {
+	panic(fmt.Errorf("not implemented"))
 }
 
 // Mutation returns generated.MutationResolver implementation.
