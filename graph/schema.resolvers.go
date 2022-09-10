@@ -296,8 +296,21 @@ func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
 	return ret, nil
 }
 
-func (r *queryResolver) IsAuthenticated(ctx context.Context) (*model.PersonValidationObject, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *queryResolver) IsAuthenticated(ctx context.Context) (*model.PersonValidationObject, error) { // determine user suthenticity
+	person := auth.ForContext(ctx)
+	if person == nil {
+		return &model.PersonValidationObject{
+			ValidationErrors: &model.ValidationErrors{
+				Errors: []string{"Unauthenticated"},
+			},
+		}, nil
+	}
+	return &model.PersonValidationObject{
+		Person: &model.Person{
+			ID:       person.Id,
+			Username: person.Username,
+		},
+	}, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.
