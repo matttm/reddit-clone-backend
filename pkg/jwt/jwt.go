@@ -5,6 +5,8 @@ import (
 	"strings"
 	"time"
 
+	_errors "reddit-clone-backend/pkg/utilities"
+
 	"github.com/dgrijalva/jwt-go"
 )
 
@@ -35,7 +37,14 @@ func ParseToken(tokenStr string) (string, error) {
 	// string will be in format "Bearer <token>"
 	// so element 1 from split will be the token
 	//
-	tokenStr = strings.Split(tokenStr, " ")[1]
+	tokenArr := strings.Split(tokenStr, " ")
+	if len(tokenArr) != 2 {
+		var err = _errors.BadRequestError{
+			ErrorString: "Token is incorrectly formatted",
+		}
+		return "", &err
+	}
+	tokenStr = tokenArr[1]
 	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 		return SecretKey, nil
 	})
