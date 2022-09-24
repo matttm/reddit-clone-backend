@@ -52,7 +52,7 @@ func (post Post) Update() int64 {
 }
 
 func (post Post) Delete() int64 {
-	stmt, err := database.Db.Prepare("DELETE POSTS WHERE ID = ?")
+	stmt, err := database.Db.Prepare("DELETE FROM POSTS WHERE ID = ?")
 	if err != nil {
 		log.Fatal(err)
 	}
