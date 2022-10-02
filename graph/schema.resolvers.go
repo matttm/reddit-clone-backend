@@ -180,6 +180,7 @@ func (r *mutationResolver) Register(ctx context.Context, credentials model.Crede
 
 func (r *mutationResolver) UpdatePost(ctx context.Context, body string, id float64, title string) (*model.Post, error) {
 	var _post posts.Post
+	_post.Id = fmt.Sprintf("%f", id)
 	_post.Title = title
 	_post.Body = body
 	postID := _post.Update()
