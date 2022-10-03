@@ -1,5 +1,7 @@
 # reddit-clone-backend
 
+Development Status: Completed
+
 ## Description
 
 This is the new backend for my reddit-clone-backend written in Go. The original backend can be found in matttm/reddit-clone. The development of that though has ceased, being replaced by this.
