@@ -2,7 +2,8 @@ package posts
 
 
 import (
-    "testing"
+	"reddit-clone-backend/internal/persons"
+	"testing"
 	"log"
 
 	"database/sql"
@@ -16,11 +17,15 @@ func TestSavePost(t *testing.T) {
 	var mock sqlmock.Sqlmock
 	database.Db, mock = NewMock()
 	defer Close()
-	mock.ExpectPrepare("INSERT INTO POSTS(PERSON_ID, TITLE, BODY, VIEWS) VALUES(\\?,\\?,\\?,\\?)")
-	mock.ExpectExec("INSERT INTO POSTS(PERSON_ID, TITLE, BODY, VIEWS) VALUES(\\?,\\?,\\?,\\?)").WithArgs(1, 1, 1, 1).WillReturnResult(sqlmock.NewResult(1, 1));
+	query := "INSERT INTO POSTS\\(PERSON_ID, TITLE, BODY, VIEWS\\) VALUES\\(\\?,\\?,\\?,\\?\\)"
+	mock.ExpectPrepare(query)
+//	mock.ExpectExec("INSERT INTO POSTS(PERSON_ID, TITLE, BODY, VIEWS) VALUES(\\?,\\?,\\?,\\?)").WithArgs(1, 1, 1, 1).WillReturnResult(sqlmock.NewResult(1, 1));
 
 
 	var post Post
+	var person persons.Person
+	person.Id = "1"
+	post.Person = &person
 	post.Title = "Test"
 	post.Body = "of the century"
 	post.Views = 0
