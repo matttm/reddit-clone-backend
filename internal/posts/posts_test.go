@@ -17,10 +17,6 @@ func TestSavePost(t *testing.T) {
 	var mock sqlmock.Sqlmock
 	database.Db, mock = NewMock()
 	defer Close()
-	query := "INSERT INTO POSTS\\(PERSON_ID, TITLE, BODY, VIEWS\\) VALUES\\(\\?,\\?,\\?,\\?\\)"
-	mock.ExpectPrepare(query)
-//	mock.ExpectExec("INSERT INTO POSTS(PERSON_ID, TITLE, BODY, VIEWS) VALUES(\\?,\\?,\\?,\\?)").WithArgs(1, 1, 1, 1).WillReturnResult(sqlmock.NewResult(1, 1));
-
 
 	var post Post
 	var person persons.Person
@@ -29,6 +25,10 @@ func TestSavePost(t *testing.T) {
 	post.Title = "Test"
 	post.Body = "of the century"
 	post.Views = 0
+
+	query := "INSERT INTO POSTS\\(PERSON_ID, TITLE, BODY, VIEWS\\) VALUES\\(\\?,\\?,\\?,\\?\\)"
+	mock.ExpectPrepare(query)
+	mock.ExpectExec(query).WithArgs(person.Id, post.Title, post.Body, post.Views).WillReturnResult(sqlmock.NewResult(1, 1));
 	post.Save()
 
 	// we make sure that all expectations were met
