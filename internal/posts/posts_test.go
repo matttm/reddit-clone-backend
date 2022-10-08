@@ -13,7 +13,7 @@ import (
 //	"github.com/stretchr/testify/assert"
 )
 
-func TestSavePost(t *testing.T) {
+func TestPost_Save(t *testing.T) {
 	var mock sqlmock.Sqlmock
 	database.Db, mock = NewMock()
 	defer Close()
@@ -37,7 +37,7 @@ func TestSavePost(t *testing.T) {
 	}
 }
 
-func TestUpdatePost(t *testing.T) {
+func TestPost_Update(t *testing.T) {
 	var mock sqlmock.Sqlmock
 	database.Db, mock = NewMock()
 	defer Close()
@@ -61,7 +61,7 @@ func TestUpdatePost(t *testing.T) {
 	}
 }
 
-func TestDeletePost(t *testing.T) {
+func TestPost_Delete(t *testing.T) {
 	var mock sqlmock.Sqlmock
 	database.Db, mock = NewMock()
 	defer Close()
