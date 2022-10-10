@@ -58,7 +58,11 @@ func (r *mutationResolver) CreatePost(ctx context.Context, post model.PostInput)
 func (r *mutationResolver) DeletePost(ctx context.Context, id float64) (int, error) {
 	var _post posts.Post
 	_post.Id = strconv.FormatFloat(id, 'E', -1, 32)
-	_post.Delete()
+	_, err :=_post.Delete()
+	if err != nil {
+		log.Printf(err.Error())
+		return 0, err
+	}
 	return 1, nil
 }
 
