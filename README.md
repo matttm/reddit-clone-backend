@@ -10,7 +10,7 @@ This is the new backend for my reddit-clone-backend written in Go. The original 
 
 ## Running
 
-First you will need to have the docker container running
+First you will need to have the docker container running, so in a terminal, run
 ```
 docker compose up
 ```
