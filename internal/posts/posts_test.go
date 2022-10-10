@@ -163,9 +163,12 @@ func TestGetAll(t *testing.T) {
 	var mock sqlmock.Sqlmock
 	database.Db, mock = NewMock()
 	defer Close()
-	postMockRows := sqlmock.NewRows([]string{"Id", "Title", "Body", "Viewx"}).
-		AddRow("1", "Genesis Post", "my body", "0").
-		AddRow("2", "Another Post", "my body", "1")
+	postMockRows := sqlmock.NewRows([]string{
+		"post.ID", "post.TITLE", "post.BODY", "post.VIEWS", "person.ID",
+		"person.USERNAME", "person.CREATED_AT", "post.CREATED_AT", "post.UPDATED_AT",
+	}).
+		AddRow("1", "Genesis Post", "my body", "0", "1", "joe", "0", "0", "0").
+		AddRow("2", "Srcond Post", "my body", "0", "1", "joe", "0", "0", "0")
 
 	query := `
 	SELECT post.ID, post.TITLE, post.BODY, post.VIEWS, person.ID,
@@ -187,8 +190,11 @@ func TestGet(t *testing.T) {
 	database.Db, mock = NewMock()
 	defer Close()
 	id := 1
-	postMockRow := sqlmock.NewRows([]string{"Id", "Title", "Body", "Viewx"}).
-		AddRow("1", "Genesis Post", "my body", "0")
+	postMockRow := sqlmock.NewRows([]string{
+		"post.ID", "post.TITLE", "post.BODY", "post.VIEWS", "person.ID",
+		"person.USERNAME", "person.CREATED_AT", "post.CREATED_AT", "post.UPDATED_AT",
+	}).
+		AddRow("1", "Genesis Post", "my body", "0", "1", "joe", "0", "0", "0")
 
 	query := `
 	SELECT post.ID, post.TITLE, post.BODY, post.VIEWS, person.ID,
