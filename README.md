@@ -9,7 +9,7 @@ This is the new backend for my reddit-clone-backend written in Go. The original 
 
 ## Getting Started
 
-## Running
+### Running
 
 First you will need to have the docker container running, so in a terminal, run
 ```
@@ -27,6 +27,13 @@ Once the docker container is running, start the server once to run the migration
 
 ```
 go run scripts/generate.go
+```
+
+### Testing
+
+To test, run
+```
+go test -v ./...
 ```
 
 ## Helpful Commands
