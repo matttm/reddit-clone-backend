@@ -87,29 +87,30 @@ func TestPost_Update(t *testing.T) {
 	}
 }
 
-//func TestPost_Update_Error(t *testing.T) {
-//	var mock sqlmock.Sqlmock
-//	database.Db, mock = NewMock()
-//	defer Close()
-//
-//	var post Post
-//	var person persons.Person
-//	person.Id = "1"
-//	post.Person = &person
-//	post.Title = "Test"
-//	post.Body = "of the century"
-//	post.Views = 0
-//
-//	query := "UPDATE POSTS SET TITLE = \\?, BODY = \\? WHERE ID = \\?"
-//	mock.ExpectPrepare(query).WillReturnError(&errors.GenericError{"Error during prepare"})
-////	mock.ExpectExec(query).WithArgs(post.Title, post.Body, post.Id).WillReturnResult(sqlmock.NewResult(1, 1));
-//	post.Update()
-//
-//	// we make sure that all expectations were met
-//	if err := mock.ExpectationsWereMet(); err != nil {
-//		t.Errorf("there were unfulfilled expectations: %s", err)
-//	}
-//}
+func TestPost_Update_Error(t *testing.T) {
+	var mock sqlmock.Sqlmock
+	database.Db, mock = NewMock()
+	defer Close()
+
+	var post Post
+	var person persons.Person
+	person.Id = "1"
+	post.Person = &person
+	post.Title = "Test"
+	post.Body = "of the century"
+	post.Views = 0
+
+	query := "UPDATE POSTS SET TITLE = \\?, BODY = \\? WHERE ID = \\?"
+	mock.ExpectPrepare(query).WillReturnError(&errors.GenericError{"Error during prepare"})
+//	mock.ExpectExec(query).WithArgs(post.Title, post.Body, post.Id).WillReturnResult(sqlmock.NewResult(1, 1));
+	_, err := post.Update()
+	assert.Error(t, err)
+
+	// we make sure that all expectations were met
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+}
 
 func TestPost_Delete(t *testing.T) {
 	var mock sqlmock.Sqlmock

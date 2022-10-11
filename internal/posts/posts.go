@@ -38,17 +38,19 @@ func (post Post) Save() int64 {
 	return id
 }
 
-func (post Post) Update() int64 {
+func (post Post) Update() (int64, error) {
 	stmt, err := database.Db.Prepare("UPDATE POSTS SET TITLE = ?, BODY = ? WHERE ID = ?")
 	if err != nil {
-		log.Fatal(err)
+		log.Printf(err.Error())
+		return 0, err
 	}
 	ret, err := stmt.Exec(post.Title, post.Body, post.Id)
 	if err != nil {
-		log.Fatal(err)
+		log.Printf(err.Error())
+		return 0, err
 	}
 	log.Print("Row Updated!", ret)
-	return 0
+	return 0, nil
 }
 
 func (post Post) Delete() (int64, error) {
