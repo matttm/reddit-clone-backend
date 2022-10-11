@@ -187,7 +187,11 @@ func (r *mutationResolver) UpdatePost(ctx context.Context, body string, id float
 	_post.Id = fmt.Sprintf("%f", id)
 	_post.Title = title
 	_post.Body = body
-	postID := _post.Update()
+	postID, err := _post.Update()
+	if err != nil {
+		log.Printf(err.Error())
+		return nil, err
+	}
 	ret := &model.Post{
 		ID:        strconv.FormatInt(postID, 10),
 		Title:     _post.Title,
