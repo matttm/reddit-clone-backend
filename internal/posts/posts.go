@@ -18,16 +18,18 @@ type Post struct {
 }
 
 // #2
-func (post Post) Save() int64 {
+func (post Post) Save() (int64, error) {
 	//#3
 	stmt, err := database.Db.Prepare("INSERT INTO POSTS(PERSON_ID, TITLE, BODY, VIEWS) VALUES(?,?,?,?)")
 	if err != nil {
-		log.Fatal(err)
+		log.Printf(err.Error())
+		return 0, err
 	}
 	//#4
 	res, err := stmt.Exec(post.Person.Id, post.Title, post.Body, post.Views)
 	if err != nil {
-		log.Fatal(err)
+		log.Printf(err.Error())
+		return 0, err
 	}
 	//#5
 	id, err := res.LastInsertId()
@@ -35,7 +37,7 @@ func (post Post) Save() int64 {
 		log.Fatal("Error:", err.Error())
 	}
 	log.Print("Row inserted!")
-	return id
+	return id, nil
 }
 
 func (post Post) Update() (int64, error) {
