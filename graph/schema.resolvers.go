@@ -20,18 +20,6 @@ import (
 *
   - @function CreatePost
   - @description create a post if use is authenticated
-    *
-    mutation create{
-    createPost(post: {title: "test", body: "test body" }){
-    post {
-    id
-    title
-    body
-    }
-    }
-    }
-
-*
 */
 func (r *mutationResolver) CreatePost(ctx context.Context, post model.PostInput) (*model.PostValidationObject, error) {
 	// determine user suthenticity
@@ -138,18 +126,6 @@ func (r *mutationResolver) Login(ctx context.Context, credentials model.Credenti
 *
 
 	@function create a user
-
-	mutation createUser {
-		register(credentials: { username: "test", password: "test" }) {
-			person {
-				id
-				username
-				createdAt
-			}
-		}
-	}
-
-*
 */
 func (r *mutationResolver) Register(ctx context.Context, credentials model.Credentials) (*model.PersonValidationObject, error) {
 	log.Printf("Attempting registration for %s", credentials.Username)
@@ -225,19 +201,7 @@ func (r *queryResolver) Hello(ctx context.Context) (string, error) {
 }
 
 /*
-*
-
-	@function get all persons
-
-	query getPersons{
-		persons {
-			id
-			username
-			createdAt
-		}
-	}
-
-*
+  @function get all persons
 */
 func (r *queryResolver) Persons(ctx context.Context) ([]*model.Person, error) {
 	dbPersons := persons.GetAll()
@@ -273,20 +237,7 @@ func (r *queryResolver) Post(ctx context.Context, id int) (*model.Post, error) {
 }
 
 /*
-*
-
 	@function get all posts
-
-	query getPosts {
-		posts {
-			title
-			body
-			views
-			id
-		}
-	}
-
-*
 */
 func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
 	posts := posts.GetAll()

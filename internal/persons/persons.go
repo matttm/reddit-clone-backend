@@ -16,6 +16,10 @@ type Person struct {
 	// posts     []*posts.Post
 }
 
+var (
+	CryptoHashPassword = crypto.HashPassword
+)
+
 //#2
 func (person Person) Create() int64 {
 	//#3
@@ -23,7 +27,7 @@ func (person Person) Create() int64 {
 	if err != nil {
 		log.Fatal(err)
 	}
-	hashPassword, err := crypto.HashPassword(person.Password)
+	hashPassword, err := CryptoHashPassword(person.Password)
 	if err != nil {
 		log.Fatal(err)
 	}
