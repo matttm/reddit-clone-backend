@@ -16,11 +16,6 @@ import (
 	"strconv"
 )
 
-/*
-*
-  - @function CreatePost
-  - @description create a post if use is authenticated
-*/
 func (r *mutationResolver) CreatePost(ctx context.Context, post model.PostInput) (*model.PostValidationObject, error) {
 	// determine user suthenticity
 	person := auth.ForContext(ctx)
@@ -58,11 +53,6 @@ func (r *mutationResolver) DeletePost(ctx context.Context, id float64) (int, err
 	return 1, nil
 }
 
-/**
-  * @function Login
-  * @description authenticate a user that exists in the system
-  *
-**/
 func (r *mutationResolver) Login(ctx context.Context, credentials model.Credentials) (*model.PersonValidationObject, error) {
 	log.Printf("Attempting login for %s", credentials.Username)
 	validationObject := model.PersonValidationObject{
@@ -122,11 +112,6 @@ func (r *mutationResolver) Login(ctx context.Context, credentials model.Credenti
 	return &validationObject, nil
 }
 
-/*
-*
-
-	@function create a user
-*/
 func (r *mutationResolver) Register(ctx context.Context, credentials model.Credentials) (*model.PersonValidationObject, error) {
 	log.Printf("Attempting registration for %s", credentials.Username)
 	var person persons.Person
@@ -208,9 +193,6 @@ func (r *queryResolver) Hello(ctx context.Context) (string, error) {
 	return "Hello", nil
 }
 
-/*
-  @function get all persons
-*/
 func (r *queryResolver) Persons(ctx context.Context) ([]*model.Person, error) {
 	dbPersons := persons.GetAll()
 	var persons []*model.Person
@@ -244,9 +226,6 @@ func (r *queryResolver) Post(ctx context.Context, id int) (*model.Post, error) {
 	return post, nil
 }
 
-/*
-	@function get all posts
-*/
 func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
 	posts := posts.GetAll()
 	var ret []*model.Post
