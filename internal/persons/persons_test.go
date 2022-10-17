@@ -5,8 +5,8 @@ package persons
 import (
 //	"reddit-clone-backend/pkg/crypto"
 
-	//	"github.com/stretchr/testify/assert"
-//	errors "reddit-clone-backend/pkg/errors"
+		"github.com/stretchr/testify/assert"
+	errors "reddit-clone-backend/pkg/errors"
 	"reddit-clone-backend/pkg/mocks"
 	"testing"
 
@@ -37,23 +37,23 @@ func TestPerson_Create(t *testing.T) {
 	}
 }
 
-//func TestPerson_Create_Error(t *testing.T) {
-//	var mock sqlmock.Sqlmock
-//	database.Db, mock = utilities.NewMock()
-//	defer utilities.Close()
-//
-//	var person Person
-//	person.Username = "matttm"
-//	person.Password = "bird314"
-//
-//	query := "INSERT INTO PERSONS\\(USERNAME, PASSWORD\\) VALUES\\(\\?,\\?\\)"
-//	mock.ExpectPrepare(query).WillReturnError(&errors.GenericError{"Error during prepare"})
-////	mock.ExpectExec(query).WithArgs(person.Id, post.Title, post.Body, post.Views).WillReturnResult(sqlmock.NewResult(1, 1));
-//	person.Create()
-////	assert.Error(t, err)
-//
-//	// we make sure that all expectations were met
-//	if err := mock.ExpectationsWereMet(); err != nil {
-//		t.Errorf("there were unfulfilled expectations: %s", err)
-//	}
-//}
+func TestPerson_Create_Error(t *testing.T) {
+	var mock sqlmock.Sqlmock
+	database.Db, mock = utilities.NewMock()
+	defer utilities.Close()
+
+	var person Person
+	person.Username = "matttm"
+	person.Password = "bird314"
+
+	query := "INSERT INTO PERSONS\\(USERNAME, PASSWORD\\) VALUES\\(\\?,\\?\\)"
+	mock.ExpectPrepare(query).WillReturnError(&errors.GenericError{"Error during prepare"})
+//	mock.ExpectExec(query).WithArgs(person.Id, post.Title, post.Body, post.Views).WillReturnResult(sqlmock.NewResult(1, 1));
+	_, err := person.Create()
+	assert.Error(t, err)
+
+	// we make sure that all expectations were met
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+}

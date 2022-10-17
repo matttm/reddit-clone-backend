@@ -21,27 +21,31 @@ var (
 )
 
 //#2
-func (person Person) Create() int64 {
+func (person Person) Create() (int64, error) {
 	//#3
 	stmt, err := database.Db.Prepare("INSERT INTO PERSONS(USERNAME, PASSWORD) VALUES(?,?)")
 	if err != nil {
-		log.Fatal(err)
+		log.Printf(err.Error())
+		return 0, err
 	}
 	hashPassword, err := CryptoHashPassword(person.Password)
 	if err != nil {
-		log.Fatal(err)
+		log.Printf(err.Error())
+		return 0, err
 	}
 	res, err := stmt.Exec(person.Username, hashPassword)
 	if err != nil {
-		log.Fatal(err)
+		log.Printf(err.Error())
+		return 0, err
 	}
 	//#5
 	id, err := res.LastInsertId()
 	if err != nil {
-		log.Fatal("Error:", err.Error())
+		log.Print("Error:", err.Error())
+		return 0, err
 	}
 	log.Print("Row inserted!")
-	return id
+	return id, nil
 }
 
 func Authenticate(username string, password string) bool {

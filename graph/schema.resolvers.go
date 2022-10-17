@@ -144,7 +144,15 @@ func (r *mutationResolver) Register(ctx context.Context, credentials model.Crede
 	// check username length
 	// check password complexity
 
-	personId := person.Create()
+	personId, err := person.Create()
+	if err != nil {
+		log.Panicf("Error: %s", err.Error())
+		validationObject.ValidationErrors.Errors = append(
+			validationObject.ValidationErrors.Errors,
+			err.Error(),
+		)
+		return &validationObject, err
+	}
 	token, err := jwt.GenerateToken(person.Username)
 	if err != nil {
 		log.Panicf("Error: %s", err.Error())
