@@ -57,3 +57,23 @@ func TestPerson_Create_Error(t *testing.T) {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 	}
 }
+
+func TestGetUserIdByUsername(t *testing.T) {
+	var mock sqlmock.Sqlmock
+	database.Db, mock = utilities.NewMock()
+	defer utilities.Close()
+	CryptoHashPassword = mocks.HashPasswordMock
+
+	username := "matttm"
+
+	query := "SELECT ID FROM PERSONS WHERE USERNAME = \\?"
+	mock.ExpectPrepare(query)
+	mock.ExpectQuery(query).WithArgs(username).WillReturnRows(sqlmock.NewRows([]string{}));
+	res, _ := GetUserIdByUsername(username)
+	assert.NotNil(t, res)
+
+	// we make sure that all expectations were met
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+}

@@ -98,7 +98,8 @@ func GetAll() []Person {
 func GetUserIdByUsername(username string) (int, error) {
 	statement, err := database.Db.Prepare("SELECT ID FROM PERSONS WHERE USERNAME = ?")
 	if err != nil {
-		log.Fatal(err)
+		log.Printf(err.Error())
+		return 0, err
 	}
 	row := statement.QueryRow(username)
 
