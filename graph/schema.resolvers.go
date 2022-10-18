@@ -72,7 +72,11 @@ func (r *mutationResolver) Login(ctx context.Context, credentials model.Credenti
 		return &validationObject, nil
 	}
 	// determine authenticity of credentials
-	isAuth := persons.Authenticate(credentials.Username, credentials.Password)
+	isAuth, err := persons.Authenticate(credentials.Username, credentials.Password)
+	if err != nil {
+		log.Print(err.Error())
+		return nil, err
+	}
 	log.Printf("User %s authenticated", credentials.Username)
 	//
 	// if user cannot be authenticated, throw an error
