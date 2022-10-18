@@ -18,6 +18,7 @@ type Person struct {
 
 var (
 	CryptoHashPassword = crypto.HashPassword
+	CryptoCheckPassword = crypto.CheckPasswordHash
 )
 
 //#2
@@ -48,10 +49,11 @@ func (person Person) Create() (int64, error) {
 	return id, nil
 }
 
-func Authenticate(username string, password string) bool {
+func Authenticate(username string, password string) (bool, error) {
 	statement, err := database.Db.Prepare("SELECT PASSWORD FROM PERSONS WHERE USERNAME = ?")
 	if err != nil {
-		log.Fatal(err)
+		log.Printf(err.Error())
+		return false, err
 	}
 	row := statement.QueryRow(username)
 
@@ -59,13 +61,14 @@ func Authenticate(username string, password string) bool {
 	err = row.Scan(&hashedPassword)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return false
+			return false, nil
 		} else {
-			log.Fatal(err)
+			log.Printf(err.Error())
+			return false, err
 		}
 	}
 
-	return crypto.CheckPasswordHash(password, hashedPassword)
+	return CryptoCheckPassword(password, hashedPassword), nil
 }
 
 func GetAll() []Person {

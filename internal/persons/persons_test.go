@@ -58,6 +58,29 @@ func TestPerson_Create_Error(t *testing.T) {
 	}
 }
 
+func TestAuthenticate(t *testing.T) {
+	var mock sqlmock.Sqlmock
+	database.Db, mock = utilities.NewMock()
+	defer utilities.Close()
+	CryptoCheckPassword = mocks.CheckPasswordHashMock
+
+	username := "matttm"
+	password := "bird314"
+
+	query := "SELECT PASSWORD FROM PERSONS WHERE USERNAME = \\?"
+	mock.ExpectPrepare(query)
+	mock.ExpectQuery(query).WithArgs(username).WillReturnRows(sqlmock.NewRows([]string{
+		"Password"}).AddRow("password"),
+	)
+	res, _ := Authenticate(username, password)
+	assert.NotNil(t, res)
+
+	// we make sure that all expectations were met
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+}
+
 func TestGetUserIdByUsername(t *testing.T) {
 	var mock sqlmock.Sqlmock
 	database.Db, mock = utilities.NewMock()
