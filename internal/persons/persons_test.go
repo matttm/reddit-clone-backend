@@ -92,9 +92,8 @@ func TestGetUserIdByUsername(t *testing.T) {
 	query := "SELECT ID FROM PERSONS WHERE USERNAME = \\?"
 	mock.ExpectPrepare(query)
 	mock.ExpectQuery(query).WithArgs(username).WillReturnRows(sqlmock.NewRows([]string{
-		"Id", "Username", "Password", "CreatedAt", "UpdatedAt",
-		}).
-		AddRow("1", "matttm", "password", "0", "0"),
+		"Id"}).
+		AddRow("1"),
 	)
 	res, _ := GetUserIdByUsername(username)
 	assert.NotNil(t, res)
