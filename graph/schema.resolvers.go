@@ -16,23 +16,6 @@ import (
 	"strconv"
 )
 
-/*
-*
-  - @function CreatePost
-  - @description create a post if use is authenticated
-    *
-    mutation create{
-    createPost(post: {title: "test", body: "test body" }){
-    post {
-    id
-    title
-    body
-    }
-    }
-    }
-
-*
-*/
 func (r *mutationResolver) CreatePost(ctx context.Context, post model.PostInput) (*model.PostValidationObject, error) {
 	// determine user suthenticity
 	person := auth.ForContext(ctx)
@@ -70,11 +53,6 @@ func (r *mutationResolver) DeletePost(ctx context.Context, id float64) (int, err
 	return 1, nil
 }
 
-/**
-  * @function Login
-  * @description authenticate a user that exists in the system
-  *
-**/
 func (r *mutationResolver) Login(ctx context.Context, credentials model.Credentials) (*model.PersonValidationObject, error) {
 	log.Printf("Attempting login for %s", credentials.Username)
 	validationObject := model.PersonValidationObject{
@@ -94,7 +72,11 @@ func (r *mutationResolver) Login(ctx context.Context, credentials model.Credenti
 		return &validationObject, nil
 	}
 	// determine authenticity of credentials
-	isAuth := persons.Authenticate(credentials.Username, credentials.Password)
+	isAuth, err := persons.Authenticate(credentials.Username, credentials.Password)
+	if err != nil {
+		log.Print(err.Error())
+		return nil, err
+	}
 	log.Printf("User %s authenticated", credentials.Username)
 	//
 	// if user cannot be authenticated, throw an error
@@ -134,23 +116,6 @@ func (r *mutationResolver) Login(ctx context.Context, credentials model.Credenti
 	return &validationObject, nil
 }
 
-/*
-*
-
-	@function create a user
-
-	mutation createUser {
-		register(credentials: { username: "test", password: "test" }) {
-			person {
-				id
-				username
-				createdAt
-			}
-		}
-	}
-
-*
-*/
 func (r *mutationResolver) Register(ctx context.Context, credentials model.Credentials) (*model.PersonValidationObject, error) {
 	log.Printf("Attempting registration for %s", credentials.Username)
 	var person persons.Person
@@ -168,7 +133,15 @@ func (r *mutationResolver) Register(ctx context.Context, credentials model.Crede
 	// check username length
 	// check password complexity
 
-	personId := person.Create()
+	personId, err := person.Create()
+	if err != nil {
+		log.Panicf("Error: %s", err.Error())
+		validationObject.ValidationErrors.Errors = append(
+			validationObject.ValidationErrors.Errors,
+			err.Error(),
+		)
+		return &validationObject, err
+	}
 	token, err := jwt.GenerateToken(person.Username)
 	if err != nil {
 		log.Panicf("Error: %s", err.Error())
@@ -224,21 +197,6 @@ func (r *queryResolver) Hello(ctx context.Context) (string, error) {
 	return "Hello", nil
 }
 
-/*
-*
-
-	@function get all persons
-
-	query getPersons{
-		persons {
-			id
-			username
-			createdAt
-		}
-	}
-
-*
-*/
 func (r *queryResolver) Persons(ctx context.Context) ([]*model.Person, error) {
 	dbPersons := persons.GetAll()
 	var persons []*model.Person
@@ -272,22 +230,6 @@ func (r *queryResolver) Post(ctx context.Context, id int) (*model.Post, error) {
 	return post, nil
 }
 
-/*
-*
-
-	@function get all posts
-
-	query getPosts {
-		posts {
-			title
-			body
-			views
-			id
-		}
-	}
-
-*
-*/
 func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
 	posts := posts.GetAll()
 	var ret []*model.Post

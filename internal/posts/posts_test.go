@@ -1,24 +1,23 @@
 package posts
 
-
 import (
-	"github.com/stretchr/testify/assert"
 	"reddit-clone-backend/internal/persons"
-	errors "reddit-clone-backend/pkg/utilities"
-	"testing"
-	"log"
+	"reddit-clone-backend/internal/utilities"
 
-	"database/sql"
+	"github.com/stretchr/testify/assert"
+
+	errors "reddit-clone-backend/pkg/errors"
+	"testing"
+
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
 
 	database "reddit-clone-backend/internal/pkg/db/mysql"
-//	"github.com/stretchr/testify/assert"
 )
 
 func TestPost_Save(t *testing.T) {
 	var mock sqlmock.Sqlmock
-	database.Db, mock = NewMock()
-	defer Close()
+	database.Db, mock = utilities.NewMock()
+	defer utilities.Close()
 
 	var post Post
 	var person persons.Person
@@ -30,7 +29,7 @@ func TestPost_Save(t *testing.T) {
 
 	query := "INSERT INTO POSTS\\(PERSON_ID, TITLE, BODY, VIEWS\\) VALUES\\(\\?,\\?,\\?,\\?\\)"
 	mock.ExpectPrepare(query)
-	mock.ExpectExec(query).WithArgs(person.Id, post.Title, post.Body, post.Views).WillReturnResult(sqlmock.NewResult(1, 1));
+	mock.ExpectExec(query).WithArgs(person.Id, post.Title, post.Body, post.Views).WillReturnResult(sqlmock.NewResult(1, 1))
 	post.Save()
 
 	// we make sure that all expectations were met
@@ -41,8 +40,8 @@ func TestPost_Save(t *testing.T) {
 
 func TestPost_Save_Error(t *testing.T) {
 	var mock sqlmock.Sqlmock
-	database.Db, mock = NewMock()
-	defer Close()
+	database.Db, mock = utilities.NewMock()
+	defer utilities.Close()
 
 	var post Post
 	var person persons.Person
@@ -54,7 +53,7 @@ func TestPost_Save_Error(t *testing.T) {
 
 	query := "INSERT INTO POSTS\\(PERSON_ID, TITLE, BODY, VIEWS\\) VALUES\\(\\?,\\?,\\?,\\?\\)"
 	mock.ExpectPrepare(query).WillReturnError(&errors.GenericError{"Error during prepare"})
-//	mock.ExpectExec(query).WithArgs(person.Id, post.Title, post.Body, post.Views).WillReturnResult(sqlmock.NewResult(1, 1));
+	//	mock.ExpectExec(query).WithArgs(person.Id, post.Title, post.Body, post.Views).WillReturnResult(sqlmock.NewResult(1, 1));
 	_, err := post.Save()
 	assert.Error(t, err)
 
@@ -66,8 +65,8 @@ func TestPost_Save_Error(t *testing.T) {
 
 func TestPost_Update(t *testing.T) {
 	var mock sqlmock.Sqlmock
-	database.Db, mock = NewMock()
-	defer Close()
+	database.Db, mock = utilities.NewMock()
+	defer utilities.Close()
 
 	var post Post
 	var person persons.Person
@@ -79,7 +78,7 @@ func TestPost_Update(t *testing.T) {
 
 	query := "UPDATE POSTS SET TITLE = \\?, BODY = \\? WHERE ID = \\?"
 	mock.ExpectPrepare(query)
-	mock.ExpectExec(query).WithArgs(post.Title, post.Body, post.Id).WillReturnResult(sqlmock.NewResult(1, 1));
+	mock.ExpectExec(query).WithArgs(post.Title, post.Body, post.Id).WillReturnResult(sqlmock.NewResult(1, 1))
 	post.Update()
 
 	// we make sure that all expectations were met
@@ -90,8 +89,8 @@ func TestPost_Update(t *testing.T) {
 
 func TestPost_Update_Error(t *testing.T) {
 	var mock sqlmock.Sqlmock
-	database.Db, mock = NewMock()
-	defer Close()
+	database.Db, mock = utilities.NewMock()
+	defer utilities.Close()
 
 	var post Post
 	var person persons.Person
@@ -103,7 +102,7 @@ func TestPost_Update_Error(t *testing.T) {
 
 	query := "UPDATE POSTS SET TITLE = \\?, BODY = \\? WHERE ID = \\?"
 	mock.ExpectPrepare(query).WillReturnError(&errors.GenericError{"Error during prepare"})
-//	mock.ExpectExec(query).WithArgs(post.Title, post.Body, post.Id).WillReturnResult(sqlmock.NewResult(1, 1));
+	//	mock.ExpectExec(query).WithArgs(post.Title, post.Body, post.Id).WillReturnResult(sqlmock.NewResult(1, 1));
 	_, err := post.Update()
 	assert.Error(t, err)
 
@@ -115,8 +114,8 @@ func TestPost_Update_Error(t *testing.T) {
 
 func TestPost_Delete(t *testing.T) {
 	var mock sqlmock.Sqlmock
-	database.Db, mock = NewMock()
-	defer Close()
+	database.Db, mock = utilities.NewMock()
+	defer utilities.Close()
 
 	var post Post
 	var person persons.Person
@@ -128,7 +127,7 @@ func TestPost_Delete(t *testing.T) {
 
 	query := "DELETE FROM POSTS WHERE ID = \\?"
 	mock.ExpectPrepare(query)
-	mock.ExpectExec(query).WithArgs(post.Id).WillReturnResult(sqlmock.NewResult(1, 1));
+	mock.ExpectExec(query).WithArgs(post.Id).WillReturnResult(sqlmock.NewResult(1, 1))
 	post.Delete()
 
 	// we make sure that all expectations were met
@@ -137,11 +136,10 @@ func TestPost_Delete(t *testing.T) {
 	}
 }
 
-
 func TestPost_Delete_Error(t *testing.T) {
 	var mock sqlmock.Sqlmock
-	database.Db, mock = NewMock()
-	defer Close()
+	database.Db, mock = utilities.NewMock()
+	defer utilities.Close()
 
 	var post Post
 	var person persons.Person
@@ -153,7 +151,7 @@ func TestPost_Delete_Error(t *testing.T) {
 
 	query := "DELETE FROM POSTS WHERE ID = \\?"
 	mock.ExpectPrepare(query).WillReturnError(&errors.GenericError{"Error during prepare"})
-//	mock.ExpectExec(query).WithArgs(post.Id).WillReturnResult(sqlmock.NewResult(1, 1));
+	//	mock.ExpectExec(query).WithArgs(post.Id).WillReturnResult(sqlmock.NewResult(1, 1));
 	_, err := post.Delete()
 	assert.Error(t, err)
 
@@ -165,8 +163,8 @@ func TestPost_Delete_Error(t *testing.T) {
 
 func TestGetAll(t *testing.T) {
 	var mock sqlmock.Sqlmock
-	database.Db, mock = NewMock()
-	defer Close()
+	database.Db, mock = utilities.NewMock()
+	defer utilities.Close()
 	postMockRows := sqlmock.NewRows([]string{
 		"post.ID", "post.TITLE", "post.BODY", "post.VIEWS", "person.ID",
 		"person.USERNAME", "person.CREATED_AT", "post.CREATED_AT", "post.UPDATED_AT",
@@ -191,8 +189,8 @@ func TestGetAll(t *testing.T) {
 
 func TestGet(t *testing.T) {
 	var mock sqlmock.Sqlmock
-	database.Db, mock = NewMock()
-	defer Close()
+	database.Db, mock = utilities.NewMock()
+	defer utilities.Close()
 	id := 1
 	postMockRow := sqlmock.NewRows([]string{
 		"post.ID", "post.TITLE", "post.BODY", "post.VIEWS", "person.ID",
@@ -213,19 +211,4 @@ func TestGet(t *testing.T) {
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 	}
-}
-
-
-// TODO: find bwtter placement for this db mock
-func NewMock() (*sql.DB, sqlmock.Sqlmock) {
-	db, mock, err := sqlmock.New()
-	if err != nil {
-		log.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
-
-	return db, mock
-}
-// Close attaches the provider and close the connection
-func Close() {
-	database.Db.Close()
 }

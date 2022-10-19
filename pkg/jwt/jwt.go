@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	_errors "reddit-clone-backend/pkg/utilities"
+	_errors "reddit-clone-backend/pkg/errors"
 
 	"github.com/dgrijalva/jwt-go"
 )

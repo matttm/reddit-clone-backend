@@ -16,34 +16,44 @@ type Person struct {
 	// posts     []*posts.Post
 }
 
+var (
+	CryptoHashPassword = crypto.HashPassword
+	CryptoCheckPassword = crypto.CheckPasswordHash
+)
+
 //#2
-func (person Person) Create() int64 {
+func (person Person) Create() (int64, error) {
 	//#3
 	stmt, err := database.Db.Prepare("INSERT INTO PERSONS(USERNAME, PASSWORD) VALUES(?,?)")
 	if err != nil {
-		log.Fatal(err)
+		log.Printf(err.Error())
+		return 0, err
 	}
-	hashPassword, err := crypto.HashPassword(person.Password)
+	hashPassword, err := CryptoHashPassword(person.Password)
 	if err != nil {
-		log.Fatal(err)
+		log.Printf(err.Error())
+		return 0, err
 	}
 	res, err := stmt.Exec(person.Username, hashPassword)
 	if err != nil {
-		log.Fatal(err)
+		log.Printf(err.Error())
+		return 0, err
 	}
 	//#5
 	id, err := res.LastInsertId()
 	if err != nil {
-		log.Fatal("Error:", err.Error())
+		log.Print("Error:", err.Error())
+		return 0, err
 	}
 	log.Print("Row inserted!")
-	return id
+	return id, nil
 }
 
-func Authenticate(username string, password string) bool {
+func Authenticate(username string, password string) (bool, error) {
 	statement, err := database.Db.Prepare("SELECT PASSWORD FROM PERSONS WHERE USERNAME = ?")
 	if err != nil {
-		log.Fatal(err)
+		log.Printf(err.Error())
+		return false, err
 	}
 	row := statement.QueryRow(username)
 
@@ -51,13 +61,14 @@ func Authenticate(username string, password string) bool {
 	err = row.Scan(&hashedPassword)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return false
+			return false, nil
 		} else {
-			log.Fatal(err)
+			log.Printf(err.Error())
+			return false, err
 		}
 	}
 
-	return crypto.CheckPasswordHash(password, hashedPassword)
+	return CryptoCheckPassword(password, hashedPassword), nil
 }
 
 func GetAll() []Person {
@@ -90,7 +101,8 @@ func GetAll() []Person {
 func GetUserIdByUsername(username string) (int, error) {
 	statement, err := database.Db.Prepare("SELECT ID FROM PERSONS WHERE USERNAME = ?")
 	if err != nil {
-		log.Fatal(err)
+		log.Printf(err.Error())
+		return 0, err
 	}
 	row := statement.QueryRow(username)
 
