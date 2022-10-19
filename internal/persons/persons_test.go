@@ -69,8 +69,8 @@ func TestAuthenticate(t *testing.T) {
 
 	query := "SELECT PASSWORD FROM PERSONS WHERE USERNAME = \\?"
 	mock.ExpectPrepare(query)
-	mock.ExpectQuery(query).WithArgs(username).WillReturnRows(sqlmock.NewRows([]string{
-		"Password"}).AddRow("password"),
+	mock.ExpectQuery(query).WithArgs(username).WillReturnRows(sqlmock.NewRows([]string{"Password"}).
+		AddRow("password"),
 	)
 	res, _ := Authenticate(username, password)
 	assert.NotNil(t, res)
@@ -91,8 +91,7 @@ func TestGetUserIdByUsername(t *testing.T) {
 
 	query := "SELECT ID FROM PERSONS WHERE USERNAME = \\?"
 	mock.ExpectPrepare(query)
-	mock.ExpectQuery(query).WithArgs(username).WillReturnRows(sqlmock.NewRows([]string{
-		"Id"}).
+	mock.ExpectQuery(query).WithArgs(username).WillReturnRows(sqlmock.NewRows([]string{"Id"}).
 		AddRow("1"),
 	)
 	res, _ := GetUserIdByUsername(username)
