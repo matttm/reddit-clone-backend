@@ -69,11 +69,77 @@ func TestAuthenticate(t *testing.T) {
 
 	query := "SELECT PASSWORD FROM PERSONS WHERE USERNAME = \\?"
 	mock.ExpectPrepare(query)
-	mock.ExpectQuery(query).WithArgs(username).WillReturnRows(sqlmock.NewRows([]string{
-		"Password"}).AddRow("password"),
+	mock.ExpectQuery(query).WithArgs(username).WillReturnRows(sqlmock.NewRows([]string{"Password"}).
+		AddRow("password"),
 	)
 	res, _ := Authenticate(username, password)
 	assert.NotNil(t, res)
+
+	// we make sure that all expectations were met
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+}
+
+func TestAuthenticate_Error(t *testing.T) {
+	var mock sqlmock.Sqlmock
+	database.Db, mock = utilities.NewMock()
+	defer utilities.Close()
+	CryptoCheckPassword = mocks.CheckPasswordHashMock
+
+	username := "matttm"
+	password := "bird314"
+
+	query := "SELECT PASSWORD FROM PERSONS WHERE USERNAME = \\?"
+	mock.ExpectPrepare(query).WillReturnError(&errors.GenericError{"Error during prepare"})
+//	mock.ExpectQuery(query).WithArgs(username).WillReturnRows(sqlmock.NewRows([]string{"Password"}).
+//		AddRow("password"),
+//	)
+	_, err := Authenticate(username, password)
+	assert.Error(t, err)
+
+	// we make sure that all expectations were met
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+}
+
+func TestGetAll(t *testing.T) {
+	var mock sqlmock.Sqlmock
+	database.Db, mock = utilities.NewMock()
+	defer utilities.Close()
+
+	query := "SELECT ID, USERNAME, CREATED_AT, UPDATED_AT FROM PERSONS"
+	mock.ExpectPrepare(query)
+	mock.ExpectQuery(query).WithArgs().WillReturnRows(sqlmock.NewRows([]string{"Id", "Username", "createdAt", "updatedAt"}).
+		AddRow("1", "matt", "0", "0").
+		AddRow("2", "joe", "1", "1").
+		AddRow("3", "zee", "2", "2"),
+	)
+	res, _ := GetAll()
+	assert.NotNil(t, res)
+
+	// we make sure that all expectations were met
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+}
+
+
+func TestGetAll_Error(t *testing.T) {
+	var mock sqlmock.Sqlmock
+	database.Db, mock = utilities.NewMock()
+	defer utilities.Close()
+
+	query := "SELECT ID, USERNAME, CREATED_AT, UPDATED_AT FROM PERSONS"
+	mock.ExpectPrepare(query).WillReturnError(&errors.GenericError{"Error during prepare"})
+//	mock.ExpectQuery(query).WithArgs().WillReturnRows(sqlmock.NewRows([]string{"Id", "Username", "createdAt", "updatedAt"}).
+//		AddRow("1", "matt", "0", "0").
+//		AddRow("2", "joe", "1", "1").
+//		AddRow("3", "zee", "2", "2"),
+//	)
+	_, err := GetAll()
+	assert.Error(t, err)
 
 	// we make sure that all expectations were met
 	if err := mock.ExpectationsWereMet(); err != nil {
@@ -91,10 +157,8 @@ func TestGetUserIdByUsername(t *testing.T) {
 
 	query := "SELECT ID FROM PERSONS WHERE USERNAME = \\?"
 	mock.ExpectPrepare(query)
-	mock.ExpectQuery(query).WithArgs(username).WillReturnRows(sqlmock.NewRows([]string{
-		"Id", "Username", "Password", "CreatedAt", "UpdatedAt",
-		}).
-		AddRow("1", "matttm", "password", "0", "0"),
+	mock.ExpectQuery(query).WithArgs(username).WillReturnRows(sqlmock.NewRows([]string{"Id"}).
+		AddRow("1"),
 	)
 	res, _ := GetUserIdByUsername(username)
 	assert.NotNil(t, res)

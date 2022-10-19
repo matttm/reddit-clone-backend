@@ -198,7 +198,11 @@ func (r *queryResolver) Hello(ctx context.Context) (string, error) {
 }
 
 func (r *queryResolver) Persons(ctx context.Context) ([]*model.Person, error) {
-	dbPersons := persons.GetAll()
+	dbPersons, err := persons.GetAll()
+	if err != nil {
+		log.Printf(err.Error())
+		return nil, err
+	}
 	var persons []*model.Person
 	for _, v := range dbPersons {
 		tmp := &model.Person{

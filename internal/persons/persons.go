@@ -71,15 +71,17 @@ func Authenticate(username string, password string) (bool, error) {
 	return CryptoCheckPassword(password, hashedPassword), nil
 }
 
-func GetAll() []Person {
+func GetAll() ([]Person, error) {
 	stmt, err := database.Db.Prepare("SELECT ID, USERNAME, CREATED_AT, UPDATED_AT FROM PERSONS")
 	if err != nil {
-		log.Fatal(err)
+		log.Printf(err.Error())
+		return nil, err
 	}
 	defer stmt.Close()
 	rows, err := stmt.Query()
 	if err != nil {
-		log.Fatal(err)
+		log.Printf(err.Error())
+		return nil, err
 	}
 	defer rows.Close()
 	var persons []Person
@@ -87,14 +89,16 @@ func GetAll() []Person {
 		var person Person
 		err := rows.Scan(&person.Id, &person.Username, &person.CreatedAt, &person.UpdatedAt)
 		if err != nil {
-			log.Fatal(err)
+			log.Printf(err.Error())
+			return nil, err
 		}
 		persons = append(persons, person)
 	}
 	if err = rows.Err(); err != nil {
-		log.Fatal(err)
+		log.Printf(err.Error())
+		return nil, err
 	}
-	return persons
+	return persons, nil
 }
 
 //GetUserIdByUsername check if a user exists in database by given username
