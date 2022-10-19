@@ -1,5 +1,5 @@
 # reddit-clone-backend
-![Coverage](https://img.shields.io/badge/Coverage-65.1%25-yellow)
+![Coverage](https://img.shields.io/badge/Coverage-75.4%25-brightgreen)
 
 Development Status: Completed
 
