@@ -16,6 +16,12 @@ import (
 	"strconv"
 )
 
+/**
+  * @function CreatePost
+  * @description adds a post to the db the connected db
+  *
+  * @return a post validation object
+*/
 func (r *mutationResolver) CreatePost(ctx context.Context, post model.PostInput) (*model.PostValidationObject, error) {
 	// determine user suthenticity
 	person := auth.ForContext(ctx)
@@ -42,17 +48,29 @@ func (r *mutationResolver) CreatePost(ctx context.Context, post model.PostInput)
 	return validationObject, nil
 }
 
+/**
+  * @function DeletePost
+  * @description remove a post to the db the connected db
+  *
+  * @return the deleted post id
+*/
 func (r *mutationResolver) DeletePost(ctx context.Context, id float64) (int, error) {
 	var _post posts.Post
 	_post.Id = strconv.FormatFloat(id, 'E', -1, 32)
-	_, err :=_post.Delete()
+	_id, err :=_post.Delete()
 	if err != nil {
 		log.Printf(err.Error())
 		return 0, err
 	}
-	return 1, nil
+	return int(_id), nil
 }
 
+/**
+  * @function Login
+  * @description login with given credentials
+  *
+  * @return a person validation object
+*/
 func (r *mutationResolver) Login(ctx context.Context, credentials model.Credentials) (*model.PersonValidationObject, error) {
 	log.Printf("Attempting login for %s", credentials.Username)
 	validationObject := model.PersonValidationObject{
@@ -116,6 +134,12 @@ func (r *mutationResolver) Login(ctx context.Context, credentials model.Credenti
 	return &validationObject, nil
 }
 
+/**
+  * @function Register
+  * @description register a user with given credentials
+  *
+  * @return a person validation object
+*/
 func (r *mutationResolver) Register(ctx context.Context, credentials model.Credentials) (*model.PersonValidationObject, error) {
 	log.Printf("Attempting registration for %s", credentials.Username)
 	var person persons.Person
@@ -159,6 +183,12 @@ func (r *mutationResolver) Register(ctx context.Context, credentials model.Crede
 
 }
 
+/**
+  * @function UpdatePost
+  * @description updates a post
+  *
+  * @return the updated post
+*/
 func (r *mutationResolver) UpdatePost(ctx context.Context, body string, id float64, title string) (*model.Post, error) {
 	var _post posts.Post
 	_post.Id = fmt.Sprintf("%f", id)
@@ -181,6 +211,12 @@ func (r *mutationResolver) UpdatePost(ctx context.Context, body string, id float
 	return ret, nil
 }
 
+/**
+  * @function RefreshToken
+  * @description refreshes the application's auth token
+  *
+  * @return the new token
+*/
 func (r *mutationResolver) RefreshToken(ctx context.Context, input model.RefreshTokenInput) (string, error) {
 	username, err := jwt.ParseToken(input.Token)
 	if err != nil {
@@ -197,6 +233,12 @@ func (r *queryResolver) Hello(ctx context.Context) (string, error) {
 	return "Hello", nil
 }
 
+/**
+  * @function Persons
+  * @description gets all persons from db
+  *
+  * @return an array of persons
+*/
 func (r *queryResolver) Persons(ctx context.Context) ([]*model.Person, error) {
 	dbPersons, err := persons.GetAll()
 	if err != nil {
@@ -216,6 +258,12 @@ func (r *queryResolver) Persons(ctx context.Context) ([]*model.Person, error) {
 	return persons, nil
 }
 
+/**
+  * @function Post
+  * @description a post from db
+  *
+  * @return the post
+*/
 func (r *queryResolver) Post(ctx context.Context, id int) (*model.Post, error) {
 	dbPost := posts.Get(id)
 	post := &model.Post{
@@ -234,6 +282,12 @@ func (r *queryResolver) Post(ctx context.Context, id int) (*model.Post, error) {
 	return post, nil
 }
 
+/**
+  * @function Posts
+  * @description gets all posts from db
+  *
+  * @return an array of posts
+*/
 func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
 	posts := posts.GetAll()
 	var ret []*model.Post
@@ -255,6 +309,12 @@ func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
 	return ret, nil
 }
 
+/**
+  * @function IsAuthenticated
+  * @description determines whether user is authenticated
+  *
+  * @return a boolean of whether user is authenticated
+*/
 func (r *queryResolver) IsAuthenticated(ctx context.Context) (*model.PersonValidationObject, error) { // determine user suthenticity
 	person := auth.ForContext(ctx)
 	if person == nil {

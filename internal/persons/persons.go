@@ -16,12 +16,18 @@ type Person struct {
 	// posts     []*posts.Post
 }
 
+// variables for monkey patching during testing
 var (
 	CryptoHashPassword = crypto.HashPassword
 	CryptoCheckPassword = crypto.CheckPasswordHash
 )
 
-//#2
+/**
+  * @function Create
+  * @description Adds a person to connected db
+  *
+  * @return an integer representing the person id and an error
+*/
 func (person Person) Create() (int64, error) {
 	//#3
 	stmt, err := database.Db.Prepare("INSERT INTO PERSONS(USERNAME, PASSWORD) VALUES(?,?)")
@@ -49,6 +55,12 @@ func (person Person) Create() (int64, error) {
 	return id, nil
 }
 
+/**
+  * @function Authenticate
+  * @description determinning whether password is correct for iven user
+  *
+  * @return an boolean representing the authentication is successful and an error
+*/
 func Authenticate(username string, password string) (bool, error) {
 	statement, err := database.Db.Prepare("SELECT PASSWORD FROM PERSONS WHERE USERNAME = ?")
 	if err != nil {
@@ -71,6 +83,12 @@ func Authenticate(username string, password string) (bool, error) {
 	return CryptoCheckPassword(password, hashedPassword), nil
 }
 
+/**
+  * @function GetAll
+  * @description Retrieve all persons from db
+  *
+  * @return an array containing all persons and an error
+*/
 func GetAll() ([]Person, error) {
 	stmt, err := database.Db.Prepare("SELECT ID, USERNAME, CREATED_AT, UPDATED_AT FROM PERSONS")
 	if err != nil {
@@ -100,8 +118,12 @@ func GetAll() ([]Person, error) {
 	}
 	return persons, nil
 }
-
-//GetUserIdByUsername check if a user exists in database by given username
+/**
+  * @function GetUserIdByUsername
+  * @description get a user's id from their username
+  *
+  * @return an integer representing the person id and an error
+*/
 func GetUserIdByUsername(username string) (int, error) {
 	statement, err := database.Db.Prepare("SELECT ID FROM PERSONS WHERE USERNAME = ?")
 	if err != nil {
