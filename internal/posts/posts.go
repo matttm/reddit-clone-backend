@@ -16,8 +16,12 @@ type Post struct {
 	UpdatedAt string
 	Person    *persons.Person
 }
-
-// #2
+/**
+  * @function Save
+  * @description Adds a post to connected db
+  *
+  * @return an integer representing the post id and an error
+*/
 func (post Post) Save() (int64, error) {
 	//#3
 	stmt, err := database.Db.Prepare("INSERT INTO POSTS(PERSON_ID, TITLE, BODY, VIEWS) VALUES(?,?,?,?)")
@@ -40,6 +44,12 @@ func (post Post) Save() (int64, error) {
 	return id, nil
 }
 
+/**
+  * @function Update
+  * @description updates a post to connected db
+  *
+  * @return an integer representing the post id and an error
+*/
 func (post Post) Update() (int64, error) {
 	stmt, err := database.Db.Prepare("UPDATE POSTS SET TITLE = ?, BODY = ? WHERE ID = ?")
 	if err != nil {
@@ -51,10 +61,21 @@ func (post Post) Update() (int64, error) {
 		log.Printf(err.Error())
 		return 0, err
 	}
+	id, err := ret.LastInsertId()
+	if err != nil {
+		log.Printf(err.Error())
+		return 0, err
+	}
 	log.Print("Row Updated!", ret)
-	return 0, nil
+	return id, nil
 }
 
+/**
+  * @function Delete
+  * @description deletes a post from the connected db
+  *
+  * @return an integer representing the post id and an error
+*/
 func (post Post) Delete() (int64, error) {
 	stmt, err := database.Db.Prepare("DELETE FROM POSTS WHERE ID = ?")
 	if err != nil {
@@ -66,10 +87,21 @@ func (post Post) Delete() (int64, error) {
 		log.Printf(err.Error())
 		return 0, err
 	}
+	id, err := ret.LastInsertId()
+	if err != nil {
+		log.Printf(err.Error())
+		return 0, err
+	}
 	log.Print("Row Deleted!", ret)
-	return 0, nil
+	return id, nil
 }
 
+/**
+  * @function GetAll
+  * @description gets all posts from the connected db
+  *
+  * @return an array of all posts
+*/
 func GetAll() []Post {
 	stmt, err := database.Db.Prepare(`
 	SELECT post.ID, post.TITLE, post.BODY, post.VIEWS, person.ID,
@@ -112,6 +144,12 @@ func GetAll() []Post {
 	return posts
 }
 
+/**
+  * @function Get
+  * @description gets a post from the connected db
+  *
+  * @return the desired post if it exists
+*/
 func Get(id int) Post {
 	var person persons.Person
 	var post Post
