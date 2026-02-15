@@ -11,15 +11,22 @@ This is the new backend for my reddit-clone-backend written in Go. The original 
 
 ### Running
 
-First you will need to have the docker container running, so in a terminal, run
+First, download the project dependencies:
+```
+go mod download
+```
+
+**Note**: The application requires Docker containers to be running. In a terminal, run:
 ```
 docker compose up
 ```
-Then in another terminal. you can start the server.
+
+Then in another terminal, you can start the server:
 ```
 go run server.go
 ```
-**Note**, both commands need to be run in the root of the project.
+
+All commands need to be run in the root of the project.
 
 ### Generating data
 
