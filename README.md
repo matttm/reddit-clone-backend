@@ -16,16 +16,15 @@ First, download the project dependencies:
 go mod download
 ```
 
-To start the application, run:
-```
-go run server.go
-```
-
-**Note**: The application requires Docker containers to be running. You will need to have the docker container running, so in a terminal, run
+**Note**: The application requires Docker containers to be running. In a terminal, run:
 ```
 docker compose up
 ```
-Then in another terminal, you can start the server with the command above.
+
+Then in another terminal, you can start the server:
+```
+go run server.go
+```
 
 All commands need to be run in the root of the project.
 
